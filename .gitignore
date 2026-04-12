@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+logs/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Secrets
+*.pem
+*.key
+
+# Test fixtures and artifacts
+.claude/test-fixtures/
+.claude/commands/test-dev-workflow.md
+.claude/context
+ai/
+tests/

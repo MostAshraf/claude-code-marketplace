@@ -1,0 +1,123 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tracker-transition-guard.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tracker-metrics-guard.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/sensitive-file-guard.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/validate-commit-msg.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/agent-status-check.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/squash-merge-verify.sh",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Agent",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tracker-update-reminder.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "tester",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/tester-activation-guard.sh",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'test -f .claude/context/provider-config.md && touch .claude/context/.stop-failure || true'",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/stop-failure-recovery.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "First, check if ai/tasks/ contains any .md tracker files. If none exist, there is no active workflow — skip this entirely and do nothing. Otherwise: context was just compacted — critical workflow state may have been lost. Reconstruct it now. Find the most recent .md file in ai/tasks/ (by filename). Read it fully. Extract: (1) Story ID from filename, (2) every task row with ID, repo if multi-repo, description, and status, (3) current phase — if any task is In Progress or In Review: Phase 3 (TDD Development Loop); all dev tasks Done, human approval not set: Phase 4; human approval set but Test Hardening not complete: Phase 5; Test Hardening complete: Phase 6. Check .claude/context/repos-paths.md for repo paths. For each repo get the current branch and list worktrees. Find the latest plan in ai/plans/. Output a structured state block: story ID, tracker path, phase, all task statuses (one line each), worktrees, branches, plan path. Then continue the workflow from where it was interrupted."
+          }
+        ]
+      }
+    ],
+    "SessionStart": []
+  }
+}
