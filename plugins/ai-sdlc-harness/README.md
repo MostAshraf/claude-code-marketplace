@@ -122,8 +122,7 @@ The **Orchestrator** (the main Claude Code conversation) coordinates all agents,
 
 Nothing proceeds past a gate without explicit human approval. See [`CLAUDE.md`](CLAUDE.md) for the full phase definitions, ownership rules, status transitions, and non-negotiable rules. The detailed Phase 3 TDD execution order (sequential within a repo, parallel across repos) is documented there.
 
-<details>
-<summary>Detailed Sequence Diagram (Mermaid)</summary>
+### Detailed Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -245,8 +244,6 @@ sequenceDiagram
         end
     end
 ```
-
-</details>
 
 ### Multi-Repo Stories
 
