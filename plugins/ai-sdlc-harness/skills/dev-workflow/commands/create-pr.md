@@ -109,7 +109,12 @@ Once the human types `APPROVED` (or chooses to proceed despite issues):
 
 ```bash
 git add ai/tasks/
-git commit -m "#<STORY-ID>: add task tracker with final workflow state"
+git commit -m "$(cat <<'EOF'
+#<STORY-ID>: add task tracker with final workflow state
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+EOF
+)"
 ```
 
 ### Step 7 — Create PRs (One Per Repo)

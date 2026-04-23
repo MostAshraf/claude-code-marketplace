@@ -62,7 +62,10 @@ gh pr create \
 
 ## Test Plan
 - [ ] Unit tests pass (92% coverage)
-- [ ] Integration tests pass"
+- [ ] Integration tests pass
+
+---
+🤖 Generated with [Claude Code](https://claude.ai/claude-code)"
 
 # The gh CLI returns the PR URL directly
 ```

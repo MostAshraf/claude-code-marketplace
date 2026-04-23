@@ -79,6 +79,8 @@ conventions without exception. If no LANGUAGE CONTEXT is provided, ask the orche
 6. **Commit test code only:**
    ```
    #<STORY-ID> #<TASK-ID> test: <brief-slug>
+
+   Co-Authored-By: Claude Code <noreply@anthropic.com>
    ```
    Do NOT commit production code. Do NOT update the task tracker.
 7. Report `test_commit` hash and the list of red tests in your AGENT STATUS.
@@ -96,6 +98,8 @@ conventions without exception. If no LANGUAGE CONTEXT is provided, ask the orche
 8. **Commit test code only:**
    ```
    #<STORY-ID> test-harden: <brief-slug>
+
+   Co-Authored-By: Claude Code <noreply@anthropic.com>
    ```
    Do NOT update the task tracker.
 

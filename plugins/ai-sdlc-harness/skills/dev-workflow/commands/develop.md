@@ -110,7 +110,12 @@ Launch **@tester** with `run_in_background: true`, `name: "tester-<repo-name>"`,
    3. Run the test command. Confirm each new test FAILS (red). Acceptable failure: assertion
       error or "type/method not found" (expected — impl doesn't exist yet). NOT acceptable:
       compile errors in test code itself (wrong syntax, wrong test framework usage).
-   4. Commit: `#<STORY-ID> #T<n> test: <slug>` — test code only.
+   4. Commit with co-author trailer — test code only:
+      ```
+      #<STORY-ID> #T<n> test: <slug>
+
+      Co-Authored-By: Claude Code <noreply@anthropic.com>
+      ```
    5. Report `test_commit` hash and the list of red tests in AGENT STATUS.
    ```
 
@@ -167,7 +172,12 @@ Parse the `📋 AGENT STATUS` block from the tester.
       If any are already green, halt and flag — do not continue.
    2. Implement production code until ALL tests pass and build is clean (zero warnings).
    3. Do NOT touch any test file. If you believe a test is wrong, stop and flag to orchestrator.
-   4. Commit: `#<STORY-ID> #T<n> impl: <slug>` — production code only.
+   4. Commit with co-author trailer — production code only:
+      ```
+      #<STORY-ID> #T<n> impl: <slug>
+
+      Co-Authored-By: Claude Code <noreply@anthropic.com>
+      ```
    ```
 
 4. Mark lane as `phase: "developing"`.
@@ -258,7 +268,12 @@ Parse the Reviewer's `📋 AGENT STATUS` block.
    ```bash
    REPO_PATH="<from lane>"
    git -C "$REPO_PATH" merge --squash <worktree-branch-from-developer-status>
-   git -C "$REPO_PATH" commit -m "#<STORY-ID> #T<n>: <task-title-from-plan>"
+   git -C "$REPO_PATH" commit -m "$(cat <<'EOF'
+#<STORY-ID> #T<n>: <task-title-from-plan>
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+EOF
+)"
    ```
    The squash captures both the Tester's failing-test commit and the Developer's implementation as one merged commit.
 

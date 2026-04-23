@@ -220,3 +220,8 @@ Adapts based on work item provider's ID format:
 - All commits in the PR must reference the Story/Issue ID and Task ID.
 - Verify no merge commits from default branch — rebase if needed.
 - Always read the provider adapter for exact tool names and parameters before making MCP calls.
+- Every PR/MR body MUST end with the attribution footer:
+  ```
+  ---
+  🤖 Generated with [Claude Code](https://claude.ai/claude-code)
+  ```

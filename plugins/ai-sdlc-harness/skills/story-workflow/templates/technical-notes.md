@@ -26,6 +26,9 @@ It provides a per-repo breakdown of technical impact.
 [Only include this section if the story spans multiple repos.
 Describe coordination concerns: deployment order, shared contracts,
 feature flags needed for safe rollout, etc.]
+
+---
+🤖 Generated with [Claude Code](https://claude.ai/claude-code)
 ```
 
 ## Guidelines

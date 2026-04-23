@@ -68,7 +68,12 @@ Instructions:
 3. Run the coverage command — identify coverage gaps in new/modified code only. Do NOT go out of scope to cover pre-existing code.
 4. Write integration/E2E tests to close meaningful gaps in new/modified code.
 5. Re-run until all tests pass and coverage is >=90% on new/modified code.
-6. Commit: `#<STORY-ID> test-harden: <slug>`
+6. Commit with co-author trailer:
+   ```
+   #<STORY-ID> test-harden: <slug>
+
+   Co-Authored-By: Claude Code <noreply@anthropic.com>
+   ```
 ```
 
 #### Step 2: Review Tests
