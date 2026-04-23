@@ -94,6 +94,11 @@ conventions without exception. If no LANGUAGE CONTEXT is provided, ask the orche
 5. **Run the coverage command** — identify uncovered lines and meaningful gap areas in **new/modified code only**. Do NOT go out of scope to cover pre-existing code.
 6. **Write integration/E2E tests** targeting coverage gaps in new/modified code. Do NOT rewrite unit tests that
    already exist. Focus on cross-component flows and error paths not covered at the unit level.
+   **Assertion depth rule**: for every test scenario, assert the full observable contract — not just the HTTP
+   status code. For success responses, assert every field in the response body defined by the plan's API
+   contract. For error responses (4xx, 5xx), assert both the status code AND every field in the error
+   envelope (e.g. `error`, `message`) as specified in the plan. Status-code-only assertions are incomplete
+   and will be rejected by the reviewer.
 7. **Run until all tests pass and coverage ≥ 90% on new/modified code.**
 8. **Commit test code only:**
    ```

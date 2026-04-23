@@ -67,6 +67,10 @@ Instructions:
 2. Run the test command — confirm existing Phase 3 tests are passing.
 3. Run the coverage command — identify coverage gaps in new/modified code only. Do NOT go out of scope to cover pre-existing code.
 4. Write integration/E2E tests to close meaningful gaps in new/modified code.
+   Assert the full observable contract in every test — not just HTTP status codes:
+   - Success responses: assert every response body field defined in the plan's API contract.
+   - Error responses (4xx, 5xx): assert the status code AND every field in the error envelope
+     (e.g. `error`, `message`) as specified in the plan. Status-code-only assertions are incomplete.
 5. Re-run until all tests pass and coverage is >=90% on new/modified code.
 6. Commit with co-author trailer:
    ```
