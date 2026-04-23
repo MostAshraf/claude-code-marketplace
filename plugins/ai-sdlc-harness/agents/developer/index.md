@@ -50,8 +50,11 @@ git repo. You create and manage your own worktree in that repo.
 
 When starting a task, create a worktree in the target repo:
 ```bash
-# Generate a unique worktree branch name
-WORKTREE_BRANCH="worktree/<story-id>-t<n>-$(date +%s)"
+# Generate a collision-safe worktree branch name using a short UUID
+# uuidgen is available on macOS and most Linux distros; python3 is the fallback
+UID8=$(uuidgen 2>/dev/null | tr '[:upper:]' '[:lower:]' | cut -c1-8 \
+       || python3 -c "import uuid; print(str(uuid.uuid4())[:8])")
+WORKTREE_BRANCH="worktree/<story-id>-t<n>-${UID8}"
 WORKTREE_PATH="<REPO_PATH>/../worktrees/<repo-name>-t<n>"
 
 # Create the worktree from the feature branch
