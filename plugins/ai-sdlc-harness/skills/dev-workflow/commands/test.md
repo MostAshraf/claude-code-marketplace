@@ -12,7 +12,7 @@ The Tester's job here is:
 1. **Gap-fill** — write integration and end-to-end tests that the per-task unit tests missed
    (cross-repo contract validation, edge cases requiring multiple components, etc.)
 2. **Coverage enforcement** — run coverage analysis and add tests until ≥ 90% line coverage
-   is reached on newly introduced/modified code
+   is reached on newly introduced/modified code only. Do NOT go out of scope to cover pre-existing code.
 3. **No duplication** — do NOT rewrite unit tests that already exist from Phase 3
 
 ## Prerequisites
@@ -52,7 +52,7 @@ per-repo hardening). Pass the repo path:
 ```
 @tester Harden tests for Story $ARGUMENTS in repo <RepoName> (auto-harden mode).
 Unit tests from Phase 3 already exist in the codebase at <REPO_PATH>.
-Your job: gap-fill integration/E2E tests and enforce >=90% line coverage.
+Your job: gap-fill integration/E2E tests and enforce >=90% line coverage on new/modified code only. Do NOT go out of scope to cover pre-existing code.
 
 Do NOT rewrite or duplicate unit tests already written in Phase 3.
 Do NOT write production code.
@@ -65,9 +65,9 @@ Commit test code only — do NOT update the task tracker.
 Instructions:
 1. Read the plan at ai/plans/* to understand the story's acceptance criteria.
 2. Run the test command — confirm existing Phase 3 tests are passing.
-3. Run the coverage command — identify coverage gaps.
-4. Write integration/E2E tests to close meaningful gaps.
-5. Re-run until all tests pass and coverage is >=90%.
+3. Run the coverage command — identify coverage gaps in new/modified code only. Do NOT go out of scope to cover pre-existing code.
+4. Write integration/E2E tests to close meaningful gaps in new/modified code.
+5. Re-run until all tests pass and coverage is >=90% on new/modified code.
 6. Commit: `#<STORY-ID> test-harden: <slug>`
 ```
 
@@ -79,7 +79,7 @@ After tester completes, launch **@reviewer** with `mode: "auto"`:
 @reviewer Review the test hardening for Story $ARGUMENTS in repo <RepoName>.
 Unit tests from Phase 3 are already present. Review only the NEWLY ADDED integration/E2E tests.
 Run the test command at <REPO_PATH> to verify all tests (Phase 3 + new) pass.
-Run the coverage command to verify >=90% line coverage.
+Run the coverage command to verify >=90% line coverage on new/modified code only.
 Produce a structured verdict.
 Do NOT update the tracker — return your review report to the orchestrator.
 

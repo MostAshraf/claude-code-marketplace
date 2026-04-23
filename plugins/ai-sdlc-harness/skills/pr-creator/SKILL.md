@@ -63,7 +63,7 @@ From the task tracker and git log, collect:
 - **Repo name** (if multi-repo, include which repo this PR covers)
 - List of completed tasks for this repo (filter by Repo column) with commit hashes
 - Number of files changed (`git -C <repo-path> diff --stat` against default branch)
-- Test coverage percentage (from the latest run of the repo's configured test command, per `language-config.md`)
+- Test coverage percentage on new/modified code only (from the latest run of the repo's configured test command, per `language-config.md`)
 
 ### 3. Present Summary to Human
 
@@ -80,7 +80,7 @@ Display:
 
 ### Stats
 - Files changed: X
-- Test coverage: XX%
+- Test coverage (new/modified code): XX%
 - Plan: ai/plans/...
 
 ### Proposed PR/MR

@@ -135,7 +135,7 @@ The Developer receives ONLY the numbered comments — not your full analysis or 
 ### For test code review (Phase 5):
 
 - Run the **test command** from LANGUAGE CONTEXT to verify all tests pass.
-- Run the **coverage command** from LANGUAGE CONTEXT to verify coverage meets the **≥ 90% threshold**.
+- Run the **coverage command** from LANGUAGE CONTEXT to verify coverage meets the **≥ 90% threshold on new/modified code only**. Do NOT flag coverage gaps in pre-existing code.
 - Verify tests are **meaningful** (not just coverage padding).
 - Verify tests follow the test framework conventions (from `.claude/context/conventions.md`).
 - Return your verdict to the orchestrator — do NOT update the tracker yourself.

@@ -278,7 +278,7 @@ Quality is enforced through independent verification at each stage:
 
 - The **Developer** must run the repo's build command (from `language-config.md`) and pass its strictness policy before committing. On failure: 2 retry attempts, then escalate to human.
 - The **Reviewer** must independently run the build command (and test command for test reviews) — it never trusts another agent's build claim.
-- The **Tester** must run the test command and achieve ≥ 90% line coverage. On failure: 2 retry attempts, then escalate.
+- The **Tester** must run the test command and achieve ≥ 90% line coverage on new/modified code only. Do NOT go out of scope to cover pre-existing code. On failure: 2 retry attempts, then escalate.
 
 ### Structured Reviews
 

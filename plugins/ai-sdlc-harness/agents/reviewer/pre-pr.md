@@ -49,7 +49,7 @@ created. Broader than per-task reviews — covers implementation and tests toget
 
 ### 3. Test Quality
 - All tests pass: ✅ / ❌ (<N failures>)
-- Coverage: <N>% (<meets / below 90% threshold>)
+- Coverage: <N>% on new/modified code (<meets / below 90% threshold>)
 - Tests are meaningful (no padding): ✅ / ⚠️ / ❌
 - Integration / E2E gaps: <list or "none">
 
@@ -100,7 +100,7 @@ created. Broader than per-task reviews — covers implementation and tests toget
 - Verdict: <APPROVED | APPROVED_WITH_CONCERNS | CHANGES_REQUESTED>
 - AC coverage: <N of M acceptance criteria met>
 - Task coverage: <N of M tasks fully implemented and tested>
-- Test coverage: <N%>
+- Test coverage (new/modified code): <N%>
 - Build verified: <yes | no (failed)>
 - Critical issues: <count or 0>
 - Warnings: <count or 0>
