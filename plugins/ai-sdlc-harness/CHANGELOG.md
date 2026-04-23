@@ -4,6 +4,32 @@ All notable changes to `ai-sdlc-harness` are documented here.
 
 ---
 
+## [1.1.0] — 2026-04-23
+
+### Features
+
+- **Claude Code attribution on all outputs** — every generated document (plan, tracker, user story, technical notes, requirements summary, PR/MR body) now ends with `🤖 Generated with [Claude Code](https://claude.ai/claude-code)`.
+- **Co-author trailer on every commit** — all commits produced by the harness (tester, developer, orchestrator squash-merge, plan commit, tracker commit) include `Co-Authored-By: Claude Code <noreply@anthropic.com>` in the commit body.
+- **Pre-PR review report enriched** — four new sections: Change Surface file list with categories (§0), Risk & Assumptions review vs plan (§8), Open Items carried forward — `TODO`/`FIXME`/`HACK` + unanswered story questions (§9), and a ready-to-use Suggested PR Description draft (§10).
+- **Pre-PR AC verification strengthened** — reviewer now performs a mandatory active code search for each acceptance criterion, locating both the implementing code and a covering test with concrete `file:line` evidence. AC table extended with separate Implementation and Test evidence columns.
+- **Full contract assertions required in integration/E2E tests** — tester must assert all response body fields defined in the plan's API contract, not just HTTP status codes. Error responses must assert status code AND every error envelope field.
+- **Story-groom auto-pulls latest default branch** — `/story-groom` now runs `git fetch origin` before any repo analysis and automatically pulls with `--ff-only` when behind the remote. Stops with a clear error if the pull fails rather than analysing stale code.
+- **Non-git workspace support in Phase 6** — when the workspace `ai/tasks/` directory is not inside a git repo, the tracker and plan are copied into each affected repo's `ai/` directories and committed from there, so artefacts travel with the feature branch.
+
+### Fixes
+
+- **Path quoting in all shell snippets** — repo paths, worktree paths, and file paths in every Bash snippet are now wrapped in double quotes to handle spaces in paths (common on macOS developer machines). New orchestrator rule #13 mandates this across the harness.
+- **UUID-based worktree branch names** — worktree branch suffix changed from `$(date +%s)` (collision-prone on fast consecutive launches) to an 8-character UUID (`uuidgen` with `python3` fallback).
+- **PR comment thread IDs persisted in tracker** — thread IDs are written into the tracker's Notes column at planning time so reply posting in Phase 7 survives session interruptions and does not rely on in-memory state.
+- **Commit convention clarified for Phase 5 test-harden commits** — `#<STORY-ID> test-harden: <desc>` (Story ID only, no Task ID) is now explicitly documented as the correct and only valid exception to the two-ID rule. Applied to reviewer Phase 0 pre-check, PR checklist, and pre-PR git hygiene section.
+
+### Docs
+
+- **Sequence diagram always visible** — removed the collapsed `<details>` wrapper; the Mermaid diagram now renders inline in the README.
+- **Coverage scope clarified** — all coverage threshold mentions now explicitly state "on new/modified code only — do NOT go out of scope to cover pre-existing code."
+
+---
+
 ## [1.0.0] — 2026-04-12
 
 First public release.

@@ -285,6 +285,8 @@ The Reviewer performs a three-phase review:
 1. **Spec compliance** — Does the code match the plan? Failures produce `[S1]`, `[S2]`, ... comments. If spec fails, code quality is skipped entirely.
 2. **Code quality** — Are conventions followed? Are there bugs? Produces `[R1]`, `[R2]`, ... comments with severities: `CRITICAL` (must fix), `WARNING` (should fix), `SUGGESTION` (consider).
 
+**Phase 6 pre-PR holistic review** produces a structured report covering: full change surface (every file changed with category), AC-by-AC verification with implementation and test evidence, task coverage, test quality, conventions, SOLID/DRY/YAGNI, security, git hygiene, risk & assumptions review vs plan, open items (TODO/FIXME/HACK + unanswered story questions), and a ready-to-use PR description draft.
+
 ## Branch & Commit Conventions
 
 **Branches:** `<team-name>/<type>/<workitem-id>-<title>` — e.g. `backend/feature/12345-add-subscription-api`. Team name is configured at `/init-workspace` time.
@@ -295,6 +297,14 @@ The Reviewer performs a three-phase review:
 #123456 #T1 test: add token refresh contract test
 #123456 #T1 impl: add token refresh endpoint to auth service
 ```
+
+**Phase 5 exception:** test-harden commits use Story ID only — no Task ID:
+
+```
+#123456 test-harden: add integration tests for token refresh flow
+```
+
+Every commit body includes `Co-Authored-By: Claude Code <noreply@anthropic.com>`.
 
 These conventions are enforced by the `validate-commit-msg` plugin-level hook (fires on every `git commit` Bash call by any agent). Orchestrator-authored commits (the Phase 2 plan commit and Phase 6 tracker commit) are not covered by the hook — follow the format manually for those.
 
