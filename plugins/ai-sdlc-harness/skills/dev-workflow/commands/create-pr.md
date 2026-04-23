@@ -105,7 +105,15 @@ Once the human types `APPROVED` (or chooses to proceed despite issues):
 
 ### Step 6 — Commit the Task Tracker
 
-**Before creating the PRs**, commit the task tracker for the first (and only) time:
+**Before creating the PRs**, commit the task tracker for the first (and only) time.
+
+First, determine whether the workspace `ai/tasks/` directory is inside a git repository:
+
+```bash
+git -C ai/tasks/ rev-parse --is-inside-work-tree 2>/dev/null
+```
+
+**If the workspace IS a git repo** (exits 0 — the normal case):
 
 ```bash
 git add ai/tasks/
@@ -116,6 +124,26 @@ Co-Authored-By: Claude Code <noreply@anthropic.com>
 EOF
 )"
 ```
+
+**If the workspace is NOT a git repo** (exits non-zero — workspace is a plain directory):
+
+For each affected repo, copy the tracker and plan into that repo's `ai/` directories, then commit from the repo:
+
+```bash
+# For each affected repo at <REPO_PATH>:
+cp ai/tasks/<tracker-file> "<REPO_PATH>/ai/tasks/<tracker-file>"
+cp ai/plans/<plan-file>    "<REPO_PATH>/ai/plans/<plan-file>"
+
+git -C "<REPO_PATH>" add ai/tasks/ ai/plans/
+git -C "<REPO_PATH>" commit -m "$(cat <<'EOF'
+#<STORY-ID>: add task tracker and plan with final workflow state
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+EOF
+)"
+```
+
+The tracker and plan now travel with the feature branch. All Step 9 amend operations target the same repo commit.
 
 ### Step 7 — Create PRs (One Per Repo)
 
@@ -143,12 +171,23 @@ related PRs in other repos:
 
 ### Step 9 — Record Final Metric
 
-After all PRs are created, set `PR created` to `date -u +"%Y-%m-%d %H:%M UTC"`.
-Amend the tracker commit with the final timestamp:
+After all PRs are created, set `PR created` to `date -u +"%Y-%m-%d %H:%M UTC"` in the tracker file, then amend the tracker commit with the final timestamp.
+
+**If the workspace is a git repo:**
 
 ```bash
 git add ai/tasks/
 git commit --amend --no-edit
+```
+
+**If the workspace is NOT a git repo** (tracker was copied into the repo in Step 6):
+
+```bash
+# Sync the updated tracker back into the repo, then amend:
+cp ai/tasks/<tracker-file> "<REPO_PATH>/ai/tasks/<tracker-file>"
+git -C "<REPO_PATH>" add ai/tasks/
+git -C "<REPO_PATH>" commit --amend --no-edit
+git -C "<REPO_PATH>" push --force-with-lease origin <feature-branch>
 ```
 
 ---
