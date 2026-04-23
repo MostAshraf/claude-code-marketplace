@@ -50,12 +50,15 @@ git repo. You create and manage your own worktree in that repo.
 
 When starting a task, create a worktree in the target repo:
 ```bash
-# Generate a unique worktree branch name
-WORKTREE_BRANCH="worktree/<story-id>-t<n>-$(date +%s)"
+# Generate a collision-safe worktree branch name using a short UUID
+# uuidgen is available on macOS and most Linux distros; python3 is the fallback
+UID8=$(uuidgen 2>/dev/null | tr '[:upper:]' '[:lower:]' | cut -c1-8 \
+       || python3 -c "import uuid; print(str(uuid.uuid4())[:8])")
+WORKTREE_BRANCH="worktree/<story-id>-t<n>-${UID8}"
 WORKTREE_PATH="<REPO_PATH>/../worktrees/<repo-name>-t<n>"
 
 # Create the worktree from the feature branch
-git -C <REPO_PATH> worktree add "$WORKTREE_PATH" -b "$WORKTREE_BRANCH" <feature-branch>
+git -C "<REPO_PATH>" worktree add "$WORKTREE_PATH" -b "$WORKTREE_BRANCH" "<feature-branch>"
 ```
 
 Then work entirely within `$WORKTREE_PATH` — all reads, writes, edits, and builds happen there.
@@ -104,6 +107,10 @@ Work directly on the feature branch in `<REPO_PATH>`.
    - TDD task: `#<STORY-ID> #<TASK-ID> impl: description of what changed`
    - Non-TDD task: `#<STORY-ID> #<TASK-ID>: description of what changed`
    Both Story ID and Task ID are required. Task ID is the planner-assigned ID (T1, T2, ...).
+   Always include the co-author trailer in the commit body:
+   ```
+   Co-Authored-By: Claude Code <noreply@anthropic.com>
+   ```
    **Do NOT commit the task tracker. Do NOT modify test files.**
 7. **Report worktree details** in your AGENT STATUS block.
 
@@ -162,10 +169,13 @@ APIs from a newer version than the project targets.
 
 ```
 #<STORY-ID> #<TASK-ID>: description in lowercase imperative mood
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
 ```
 
 Both IDs are required. Task ID is the planner-assigned ID (T1, T2, ...).
 For TDD tasks, use the `impl:` suffix: `#<STORY-ID> #<TASK-ID> impl: description`
+The `Co-Authored-By` trailer is mandatory in every commit body.
 
 ## Agent Response Contract (Non-Negotiable)
 

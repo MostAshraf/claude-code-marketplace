@@ -28,6 +28,9 @@ Remove items as they get answered — don't leave stale questions.]
 [Added during or after grooming. Per-repo breakdown of affected components,
 migration concerns, testing strategy, and risk flags. See technical-notes.md
 for the detailed format.]
+
+---
+🤖 Generated with [Claude Code](https://claude.ai/claude-code)
 ```
 
 ## Section Guidelines

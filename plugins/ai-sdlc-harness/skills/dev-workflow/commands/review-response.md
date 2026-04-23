@@ -54,7 +54,7 @@ Collect for each unresolved comment:
 - Repo name
 - File path and line number (or `"general"` if not inline)
 - Comment author and body text
-- Thread ID (for replying later, kept in orchestrator state — not shown to human)
+- Thread ID (provider-native identifier used to post replies — persisted into the tracker in Step 7; do NOT rely on in-memory state)
 
 **If no unresolved comments are found across all repos:**
 
@@ -185,7 +185,7 @@ Instructions:
    - Status: ⏳ Pending
    - Reviewer Verdict: —
    - Commit(s): —
-   - Notes: PR-comment: [PC-<n>] | test-required: true
+   - Notes: PR-comment: [PC-<n>] thread_id=<provider-thread-id> | test-required: true
 4. Add a Test Outline section for each new task to the PLAN document, following the same
    format and naming convention as the original Test Outline (Subject_Scenario_Outcome).
    Base the test names on the Reviewer's proposed task description.
@@ -238,15 +238,17 @@ Would you like me to reply to the addressed PR comment threads with commit refer
   [NO]  Skip
 ```
 
-**If YES:** For each addressed `[PC-<n>]` comment, use the git provider adapter to post
-a reply on the original thread:
+**If YES:** Read the tracker's Notes column for every task whose Notes contain `PR-comment:`.
+Extract the `thread_id=<value>` stored there by the Planner in Step 7. For each addressed
+`[PC-<n>]` comment, use the git provider adapter to post a reply on the original thread:
 
 ```
 Addressed in commit <squash-merge-hash>: <one-sentence summary of what was changed>
 ```
 
-Use the thread IDs captured in Step 2. Route through the provider adapter in
-`skills/providers/<git-provider>/pull-requests.md`.
+Route through the provider adapter in `skills/providers/<git-provider>/pull-requests.md`.
+The thread IDs come from the tracker — not from session memory — so this step is safe to
+run even after a session interruption.
 
 ---
 

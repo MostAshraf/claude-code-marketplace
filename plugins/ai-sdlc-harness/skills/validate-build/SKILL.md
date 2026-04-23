@@ -56,7 +56,7 @@ All commands run from `project_root` unless the configured command already embed
 If `restore_command` is set and non-empty, run it:
 
 ```bash
-cd <project_root> && <restore_command> 2>&1
+cd "<project_root>" && <restore_command> 2>&1
 ```
 
 If empty, skip this step silently. If the restore command fails, record the error
@@ -68,13 +68,13 @@ Compose the build command. If `zero_warning_support == "native"` and
 `build_zero_warning_flag` is non-empty, append the flag to the build command:
 
 ```bash
-cd <project_root> && <build_command> <build_zero_warning_flag> 2>&1
+cd "<project_root>" && <build_command> <build_zero_warning_flag> 2>&1
 ```
 
 Otherwise, run the build command as-is:
 
 ```bash
-cd <project_root> && <build_command> 2>&1
+cd "<project_root>" && <build_command> 2>&1
 ```
 
 Parse the combined stdout/stderr output:
@@ -98,7 +98,7 @@ Parse the combined stdout/stderr output:
 ### 3. Run Tests
 
 ```bash
-cd <project_root> && <test_command> 2>&1
+cd "<project_root>" && <test_command> 2>&1
 ```
 
 Parse the output using `test_summary_pattern`. The regex is expected to capture

@@ -77,10 +77,10 @@ Any other transition is blocked by the `tracker-transition-guard` hook.
 ## Non-Negotiable Rules
 
 - Show a brief plan before taking action on any task. Wait for approval before executing.
-- All commits: `#<STORY-ID> #<TASK-ID>: description` (both IDs mandatory; Task ID from planner e.g. T1, T2). TDD commits use `test:` or `impl:` suffix — `#<STORY> #T<n> test: <slug>` and `#<STORY> #T<n> impl: <slug>`.
+- All commits: `#<STORY-ID> #<TASK-ID>: description` (both IDs mandatory; Task ID from planner e.g. T1, T2). TDD commits use `test:` or `impl:` suffix — `#<STORY> #T<n> test: <slug>` and `#<STORY> #T<n> impl: <slug>`. Every commit body must include `Co-Authored-By: Claude Code <noreply@anthropic.com>`.
 - All branches: `<team>/<type>/<id>-<slug>`
 - Build must pass the project's strictness policy as recorded in `language-config.md`. The harness warns at init-workspace time if no zero-warning enforcement mechanism is available for the detected language.
-- Tests must achieve ≥ 90% line coverage (test command per language-config.md)
+- Tests must achieve ≥ 90% line coverage on new/modified code only (test command per language-config.md). Do NOT go out of scope to cover pre-existing code.
 - Task tracker must be updated (in working tree) after every status change — committed once in Phase 6, amended in Phase 7
 - Reviewer NEVER writes or edits files — orchestrator owns all tracker updates
 - No code before plan approval. No PR before human approval.

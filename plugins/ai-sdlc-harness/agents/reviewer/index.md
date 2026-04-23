@@ -54,7 +54,10 @@ You perform a **three-stage review** — first an Ownership & Convention Pre-Che
 These are the deterministic rules that used to be enforced by per-agent hooks. The hooks are gone; you are now the backstop. Run these checks against the commit diff **before** reading the plan or the code itself. If **any** check fails, return `🔄 Changes Requested` immediately with the specific `[R<n>]` comment — do not proceed to Phase A.
 
 1. **No forbidden writes under `./ai/`**: If the commit touches any file under `ai/plans/` or `ai/tasks/`, fail. Only the Planner may touch `ai/plans/`; only the Orchestrator may touch `ai/tasks/`. Developer and Tester commits must never contain `ai/*` paths.
-2. **Commit message format**: Every commit in the diff must match `#<STORY-ID> #<TASK-ID>(?: (test|impl))?:\s+<lowercase-description>`. Both Story ID and Task ID are mandatory. Story ID is either numeric (ADO/GitHub/GitLab) or `PROJ-123` (Jira). Task ID starts with `T` (e.g. `T1`, `T-TEST-AuthService`). Description must start with a lowercase letter (imperative mood). Fail on any deviation.
+2. **Commit message format**: Two valid patterns — accept either, reject anything else:
+   - **Phase 3 / rework** (Developer, Tester, PR-fix commits): `#<STORY-ID> #<TASK-ID>(?: (test|impl))?:\s+<lowercase-description>` — both Story ID and Task ID are mandatory. Task ID starts with `T` (e.g. `T1`, `T-TEST-AuthService`). Description must start with a lowercase letter.
+   - **Phase 5 test-harden** commits: `#<STORY-ID> test-harden:\s+<lowercase-description>` — Story ID only; no Task ID. This is the only valid exception to the two-ID rule.
+   - Story ID is either numeric (ADO/GitHub/GitLab) or `PROJ-123` (Jira). Fail on any other deviation.
 3. **No GitHub emoji shortcodes in Markdown**: If the diff touches any `.md` file and contains `:shortcode:` patterns (e.g. `:white_check_mark:`, `:x:`, `:warning:`), fail. Unicode emoji characters only.
 4. **Sensitive files absent**: The diff must not add or modify any file ending in `.env`, `.secret`, `.key`, `.pfx`, `.pem`. Fail immediately if present.
 
@@ -135,7 +138,7 @@ The Developer receives ONLY the numbered comments — not your full analysis or 
 ### For test code review (Phase 5):
 
 - Run the **test command** from LANGUAGE CONTEXT to verify all tests pass.
-- Run the **coverage command** from LANGUAGE CONTEXT to verify coverage meets the **≥ 90% threshold**.
+- Run the **coverage command** from LANGUAGE CONTEXT to verify coverage meets the **≥ 90% threshold on new/modified code only**. Do NOT flag coverage gaps in pre-existing code.
 - Verify tests are **meaningful** (not just coverage padding).
 - Verify tests follow the test framework conventions (from `.claude/context/conventions.md`).
 - Return your verdict to the orchestrator — do NOT update the tracker yourself.
@@ -199,7 +202,7 @@ Check and report SOLID, DRY, and YAGNI violations on every review — flag them 
 - [ ] Auth/authz changes reviewed for correctness
 
 ### Git Hygiene
-- [ ] Commits follow convention: `#<STORY-ID> #<TASK-ID>: description` (both IDs mandatory)
+- [ ] Commits follow convention: `#<STORY-ID> #<TASK-ID>: description` (Phase 3/rework) or `#<STORY-ID> test-harden: description` (Phase 5 — no Task ID)
 - [ ] Branch follows: `<team-name>/<type>/<workitem-id>-<title>`
 - [ ] No merge commits from default branch; rebase if needed
 - [ ] PR/MR title includes work item ID in provider-specific format

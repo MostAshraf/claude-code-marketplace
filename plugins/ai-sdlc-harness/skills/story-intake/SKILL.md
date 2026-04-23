@@ -122,6 +122,9 @@ If ANY gaps found, present numbered clarifying questions to the human user.
 - ...
 
 ### Ready for Planning: ✅ YES / ❌ NO (reason)
+
+---
+🤖 Generated with [Claude Code](https://claude.ai/claude-code)
 ```
 
 ## Rules

@@ -58,7 +58,10 @@ glab mr create \
 
 ## Test Plan
 - [x] Unit tests pass (92% coverage)
-- [x] Integration tests pass" \
+- [x] Integration tests pass
+
+---
+🤖 Generated with [Claude Code](https://claude.ai/claude-code)" \
   --remove-source-branch
 ```
 

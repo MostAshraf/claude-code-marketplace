@@ -63,7 +63,7 @@ From the task tracker and git log, collect:
 - **Repo name** (if multi-repo, include which repo this PR covers)
 - List of completed tasks for this repo (filter by Repo column) with commit hashes
 - Number of files changed (`git -C <repo-path> diff --stat` against default branch)
-- Test coverage percentage (from the latest run of the repo's configured test command, per `language-config.md`)
+- Test coverage percentage on new/modified code only (from the latest run of the repo's configured test command, per `language-config.md`)
 
 ### 3. Present Summary to Human
 
@@ -80,7 +80,7 @@ Display:
 
 ### Stats
 - Files changed: X
-- Test coverage: XX%
+- Test coverage (new/modified code): XX%
 - Plan: ai/plans/...
 
 ### Proposed PR/MR
@@ -220,3 +220,8 @@ Adapts based on work item provider's ID format:
 - All commits in the PR must reference the Story/Issue ID and Task ID.
 - Verify no merge commits from default branch — rebase if needed.
 - Always read the provider adapter for exact tool names and parameters before making MCP calls.
+- Every PR/MR body MUST end with the attribution footer:
+  ```
+  ---
+  🤖 Generated with [Claude Code](https://claude.ai/claude-code)
+  ```

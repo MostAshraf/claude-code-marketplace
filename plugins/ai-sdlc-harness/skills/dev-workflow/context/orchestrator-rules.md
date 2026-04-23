@@ -69,6 +69,8 @@ These rules apply to ALL phases of the dev-workflow. Individual command files mu
 
 12. **Language-aware operations**: Before launching any agent for a specific repo, read `.claude/context/language-config.md` to resolve the repo's language, build command, test command, and format command. Include this as a **LANGUAGE CONTEXT** block in every developer, tester, and reviewer prompt. The conventions path is always `.claude/context/conventions.md` (the single generated authority). Never hardcode `dotnet`, `mvn`, `gradlew`, or any other language-specific command in orchestrator logic — always resolve the command strings from `language-config.md`. This applies to Phases 3, 5, and the develop/test command files.
 
+13. **Always double-quote paths in shell commands**: Any repo path, worktree path, or file path used in a Bash command MUST be wrapped in double quotes. Paths on macOS and developer machines routinely contain spaces (e.g. `/Users/x/My Work/repo`) — an unquoted path splits into multiple arguments and causes the command to fail silently or destructively. This applies to orchestrator git commands, agent worktree setup, and all skill SKILL.md snippets. Example: `git -C "<repo-path>" worktree add "<worktree-path>"` not `git -C <repo-path> worktree add <worktree-path>`.
+
 ## Agent Response Contract
 
 All agents end every response with a `📋 AGENT STATUS` block. The orchestrator MUST parse this block after every agent invocation to determine the next action.

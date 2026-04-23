@@ -79,6 +79,8 @@ conventions without exception. If no LANGUAGE CONTEXT is provided, ask the orche
 6. **Commit test code only:**
    ```
    #<STORY-ID> #<TASK-ID> test: <brief-slug>
+
+   Co-Authored-By: Claude Code <noreply@anthropic.com>
    ```
    Do NOT commit production code. Do NOT update the task tracker.
 7. Report `test_commit` hash and the list of red tests in your AGENT STATUS.
@@ -89,13 +91,20 @@ conventions without exception. If no LANGUAGE CONTEXT is provided, ask the orche
 2. **Navigate to the repo**: all test writing, builds, and runs happen at `REPO_PATH`.
 3. **Read `.claude/context/conventions.md`** for test framework and coverage conventions.
 4. **Run the existing tests** — confirm all Phase 3 tests are passing before you add anything.
-5. **Run the coverage command** — identify uncovered lines and meaningful gap areas.
-6. **Write integration/E2E tests** targeting coverage gaps. Do NOT rewrite unit tests that
+5. **Run the coverage command** — identify uncovered lines and meaningful gap areas in **new/modified code only**. Do NOT go out of scope to cover pre-existing code.
+6. **Write integration/E2E tests** targeting coverage gaps in new/modified code. Do NOT rewrite unit tests that
    already exist. Focus on cross-component flows and error paths not covered at the unit level.
-7. **Run until all tests pass and coverage ≥ 90%.**
+   **Assertion depth rule**: for every test scenario, assert the full observable contract — not just the HTTP
+   status code. For success responses, assert every field in the response body defined by the plan's API
+   contract. For error responses (4xx, 5xx), assert both the status code AND every field in the error
+   envelope (e.g. `error`, `message`) as specified in the plan. Status-code-only assertions are incomplete
+   and will be rejected by the reviewer.
+7. **Run until all tests pass and coverage ≥ 90% on new/modified code.**
 8. **Commit test code only:**
    ```
    #<STORY-ID> test-harden: <brief-slug>
+
+   Co-Authored-By: Claude Code <noreply@anthropic.com>
    ```
    Do NOT update the task tracker.
 
@@ -111,9 +120,9 @@ In `auto-tdd` mode, new tests SHOULD fail at runtime (red) — that is expected 
 
 ## Coverage Shortfall Recovery (auto-harden only)
 
-If coverage is below 90% after writing tests:
-1. Run the coverage command and identify uncovered lines/classes.
-2. Write additional tests targeting uncovered paths.
+If coverage is below 90% on new/modified code after writing tests:
+1. Run the coverage command and identify uncovered lines/classes **in new/modified code only**. Do NOT go out of scope to cover pre-existing code.
+2. Write additional tests targeting uncovered paths in new/modified code.
 3. Re-run. If still below 90% after 2 iterations, report with the percentage and
    uncovered areas in your response contract.
 
@@ -134,7 +143,7 @@ Before every `git commit` of test code, run the `format_command` from `.claude/c
 
 ## Coverage Target (auto-harden only)
 
-**≥ 90% line coverage** on new/modified code. Use the coverage command from LANGUAGE CONTEXT.
+**≥ 90% line coverage on new/modified code only.** Do NOT go out of scope to cover pre-existing code. Use the coverage command from LANGUAGE CONTEXT.
 
 ## Agent Response Contract (Non-Negotiable)
 

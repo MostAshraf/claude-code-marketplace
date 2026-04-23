@@ -10,7 +10,7 @@
       "name": "ai-sdlc-harness",
       "source": "./plugins/ai-sdlc-harness/",
       "description": "AI-driven SDLC workflow harness for multi-repo development. Provides story refinement, multi-agent development (plan → code → review → test → PR), and automated guardrails via hooks. Supports Azure DevOps, Jira, GitLab, GitHub, Zoho, and local Markdown as work item providers; ADO, GitLab, GitHub, gh-cli, and glab-cli as git providers. Language-agnostic, discovery-driven; supports any language (frontend + backend).",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": {
         "name": "Mostafa Ashraf"
       },

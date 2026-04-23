@@ -122,8 +122,7 @@ The **Orchestrator** (the main Claude Code conversation) coordinates all agents,
 
 Nothing proceeds past a gate without explicit human approval. See [`CLAUDE.md`](CLAUDE.md) for the full phase definitions, ownership rules, status transitions, and non-negotiable rules. The detailed Phase 3 TDD execution order (sequential within a repo, parallel across repos) is documented there.
 
-<details>
-<summary>Detailed Sequence Diagram (Mermaid)</summary>
+### Detailed Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -246,8 +245,6 @@ sequenceDiagram
     end
 ```
 
-</details>
-
 ### Multi-Repo Stories
 
 When a story spans multiple repos, developer lanes run **in parallel** across repos while tasks remain **sequential within each repo**. Cross-repo dependencies (API contracts, message schemas, shared DTOs) are defined by the Planner as numbered contracts (C1, C2, ...). Each repo gets its own PR/MR, all linked to the same work item.
@@ -278,7 +275,7 @@ Quality is enforced through independent verification at each stage:
 
 - The **Developer** must run the repo's build command (from `language-config.md`) and pass its strictness policy before committing. On failure: 2 retry attempts, then escalate to human.
 - The **Reviewer** must independently run the build command (and test command for test reviews) — it never trusts another agent's build claim.
-- The **Tester** must run the test command and achieve ≥ 90% line coverage. On failure: 2 retry attempts, then escalate.
+- The **Tester** must run the test command and achieve ≥ 90% line coverage on new/modified code only. Do NOT go out of scope to cover pre-existing code. On failure: 2 retry attempts, then escalate.
 
 ### Structured Reviews
 
@@ -287,6 +284,8 @@ The Reviewer performs a three-phase review:
 0. **Ownership & convention pre-check** — Runs first, before any code is read. Verifies no forbidden path writes (developer/tester must not touch `./ai/`), commit message format, no emoji shortcodes in Markdown, no sensitive files (`.env`, `.pem`, `.key`). Any failure immediately returns `🔄 Changes Requested` and skips the later phases.
 1. **Spec compliance** — Does the code match the plan? Failures produce `[S1]`, `[S2]`, ... comments. If spec fails, code quality is skipped entirely.
 2. **Code quality** — Are conventions followed? Are there bugs? Produces `[R1]`, `[R2]`, ... comments with severities: `CRITICAL` (must fix), `WARNING` (should fix), `SUGGESTION` (consider).
+
+**Phase 6 pre-PR holistic review** produces a structured report covering: full change surface (every file changed with category), AC-by-AC verification with implementation and test evidence, task coverage, test quality, conventions, SOLID/DRY/YAGNI, security, git hygiene, risk & assumptions review vs plan, open items (TODO/FIXME/HACK + unanswered story questions), and a ready-to-use PR description draft.
 
 ## Branch & Commit Conventions
 
@@ -298,6 +297,14 @@ The Reviewer performs a three-phase review:
 #123456 #T1 test: add token refresh contract test
 #123456 #T1 impl: add token refresh endpoint to auth service
 ```
+
+**Phase 5 exception:** test-harden commits use Story ID only — no Task ID:
+
+```
+#123456 test-harden: add integration tests for token refresh flow
+```
+
+Every commit body includes `Co-Authored-By: Claude Code <noreply@anthropic.com>`.
 
 These conventions are enforced by the `validate-commit-msg` plugin-level hook (fires on every `git commit` Bash call by any agent). Orchestrator-authored commits (the Phase 2 plan commit and Phase 6 tracker commit) are not covered by the hook — follow the format manually for those.
 

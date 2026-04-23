@@ -60,7 +60,12 @@ Once approved, commit **only the plan file** (the tracker stays uncommitted):
 
 ```bash
 git add ai/plans/
-git commit -m "#<STORY-ID>: add approved implementation plan"
+git commit -m "$(cat <<'EOF'
+#<STORY-ID>: add approved implementation plan
+
+Co-Authored-By: Claude Code <noreply@anthropic.com>
+EOF
+)"
 ```
 
 **The task tracker is NOT committed here.** It remains an uncommitted working file that the

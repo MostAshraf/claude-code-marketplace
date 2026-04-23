@@ -189,6 +189,7 @@ The plan document must include:
 10. Sequence diagram
 11. Conventions reference (link to `.claude/context/conventions.md` — the single authoritative conventions file)
 12. Risk/assumptions section
+13. Attribution footer (last line): `🤖 Generated with [Claude Code](https://claude.ai/claude-code)`
 
 ### 7. Create Task Tracker
 
@@ -260,6 +261,9 @@ Column definitions:
 *(Populated by the orchestrator during Phase 3 whenever a Reviewer returns CHANGES_REQUESTED.
 Empty if all tasks were approved on the first pass. The development flow is never paused for
 these entries — they are recorded for human review at GATE #2.)*
+
+---
+🤖 Generated with [Claude Code](https://claude.ai/claude-code)
 ```
 
 **Notes:**

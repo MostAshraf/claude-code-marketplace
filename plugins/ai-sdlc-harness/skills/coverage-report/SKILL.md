@@ -46,7 +46,7 @@ No per-language logic lives in this skill — everything comes from discovered c
 ### 1. Run Tests with Coverage
 
 ```bash
-cd <project_root> && <coverage_command> 2>&1
+cd "<project_root>" && <coverage_command> 2>&1
 ```
 
 Capture the exit code. If the command fails, still proceed to locate and parse
@@ -55,14 +55,14 @@ any coverage output that was produced, and flag the test failures in the report.
 ### 2. Locate Coverage File
 
 ```bash
-find <project_root> -path <coverage_output_glob> -type f 2>/dev/null \
+find "<project_root>" -path "<coverage_output_glob>" -type f 2>/dev/null \
   | sort -r | head -1
 ```
 
 Or, if `coverage_output_glob` is a plain glob (not a `find -path` expression):
 
 ```bash
-ls -t <project_root>/<coverage_output_glob> 2>/dev/null | head -1
+ls -t "<project_root>"/<coverage_output_glob> 2>/dev/null | head -1
 ```
 
 If no file is found, report the glob and instruct the user to re-check
@@ -85,11 +85,11 @@ The root `<coverage>` element carries `line-rate` as a float in `[0.0, 1.0]`.
 
 ```bash
 # Preferred: xmllint
-LINE_RATE=$(xmllint --xpath 'string(/coverage/@line-rate)' <file>)
+LINE_RATE=$(xmllint --xpath 'string(/coverage/@line-rate)' "<file>")
 LINE_PCT=$(awk "BEGIN { printf \"%.1f\", ${LINE_RATE} * 100 }")
 
 # Fallback: grep
-LINE_RATE=$(grep -oE 'line-rate="[0-9.]+"' <file> | head -1 \
+LINE_RATE=$(grep -oE 'line-rate="[0-9.]+"' "<file>" | head -1 \
             | grep -oE '[0-9.]+')
 LINE_PCT=$(awk "BEGIN { printf \"%.1f\", ${LINE_RATE} * 100 }")
 ```
@@ -104,8 +104,8 @@ The root element (`<report>`) contains a direct-child `<counter type="LINE" miss
 
 ```bash
 # Preferred: xmllint
-MISSED=$(xmllint --xpath 'string(/report/counter[@type="LINE"]/@missed)' <file>)
-COVERED=$(xmllint --xpath 'string(/report/counter[@type="LINE"]/@covered)' <file>)
+MISSED=$(xmllint --xpath 'string(/report/counter[@type="LINE"]/@missed)' "<file>")
+COVERED=$(xmllint --xpath 'string(/report/counter[@type="LINE"]/@covered)' "<file>")
 LINE_PCT=$(awk "BEGIN { t = ${MISSED} + ${COVERED}; if (t>0) printf \"%.1f\", ${COVERED}/t*100; else print \"0.0\" }")
 ```
 
@@ -136,10 +136,10 @@ Read `total.lines.pct` from the JSON file.
 
 ```bash
 # Preferred: jq
-LINE_PCT=$(jq -r '.total.lines.pct' <file>)
+LINE_PCT=$(jq -r '.total.lines.pct' "<file>")
 
 # Fallback: grep (brittle)
-LINE_PCT=$(grep -oE '"lines":\{[^}]*"pct":[0-9.]+' <file> | head -1 \
+LINE_PCT=$(grep -oE '"lines":\{[^}]*"pct":[0-9.]+' "<file>" | head -1 \
            | grep -oE '[0-9.]+$')
 ```
 
@@ -154,7 +154,7 @@ The output file is a Go coverprofile. Run `go tool cover -func=<file>` and extra
 the `total:` line's percentage:
 
 ```bash
-cd <project_root> && go tool cover -func=<file> 2>&1 \
+cd "<project_root>" && go tool cover -func="<file>" 2>&1 \
   | awk '/^total:/ { gsub("%","",$NF); print $NF }'
 ```
 
