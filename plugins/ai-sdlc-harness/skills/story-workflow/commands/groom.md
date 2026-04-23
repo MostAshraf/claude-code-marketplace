@@ -50,13 +50,17 @@ Present your assessment to the user for confirmation:
 
 Wait for confirmation before proceeding. Do not scan repos the user hasn't approved.
 
-### Step 3 — Verify Repo State
+### Step 3 — Verify Repo State and Pull Latest
 
 For each confirmed repo, use the local path from `.claude/context/repos-paths.md` and verify:
 
 1. **Path exists**: Check the directory exists and is a git repo.
-2. **On default branch**: Run `git branch --show-current` and compare with the default
-   branch from `repos-metadata.md`. If not on the default branch:
+2. **Fetch from remote**: Always run `git -C <path> fetch origin` before any other checks.
+   This updates the local knowledge of the remote without touching the working tree.
+   If the fetch fails (no network, bad remote), report the error and stop for that repo:
+   > "⚠️ [repo-name] — could not reach remote. Check your network or remote config before grooming."
+3. **On default branch**: Run `git -C <path> branch --show-current` and compare with the
+   default branch from `repos-metadata.md`. If not on the default branch:
    > "⚠️ [repo-name] is on branch `feature/xyz`, not `main`. The technical analysis should
    > be based on the latest default branch to be accurate.
    >
@@ -65,17 +69,24 @@ For each confirmed repo, use the local path from `.claude/context/repos-paths.md
    > 2. **Proceed on current branch** — analyse as-is (results may not reflect latest state).
    >
    > Please choose (1 or 2):"
-   
-   Wait for an explicit numeric choice. Do not default to either option. If the user
-   chooses option 1, run `git -C <path> checkout <default-branch>` then continue.
-   If the user chooses option 2, proceed on the current branch.
-3. **Up to date**: Run `git status` to check for unpulled changes. Check if the local
-   branch is behind the remote: `git rev-list HEAD..origin/[default-branch] --count`.
-   If behind:
-   > "⚠️ [repo-name] is [N] commits behind origin/main. Should I proceed with the local
-   > version, or do you want to pull first?"
 
-Only proceed with repos that the user confirms are in an acceptable state.
+   Wait for an explicit numeric choice. Do not default to either option. If the user
+   chooses option 1, run `git -C <path> checkout <default-branch>` then continue to the
+   Pull Latest sub-step below. If the user chooses option 2, proceed on the current branch
+   and skip the Pull Latest sub-step.
+4. **Pull latest** *(skipped if user chose to proceed on current branch)*: Run `git rev-list HEAD..origin/<default-branch> --count` to check if
+   the local branch is behind the (now-fetched) remote. If behind, pull automatically:
+   ```bash
+   git -C <path> pull --ff-only origin <default-branch>
+   ```
+   Report the result:
+   > "✅ [repo-name] pulled to latest — now at [short-hash] ([N] new commits)."
+
+   If the pull fails (e.g. local uncommitted changes, diverged history), do not force it.
+   Report the error and ask the user to resolve it manually before proceeding:
+   > "⚠️ [repo-name] — pull failed: [error]. Please resolve manually, then re-run `/story-groom`."
+
+Only proceed with the analysis for repos that are confirmed up to date.
 
 ### Step 4 — Analyze Each Repo
 
@@ -133,7 +144,7 @@ notes as a comment on the work item.
 - Never switch git branches without explicit user approval. Always present a numbered
   choice and wait for a response before running any `git checkout`. Never default or
   assume — if the user's reply is ambiguous, re-prompt.
-- Never auto-pull. Only check and report pull status; the developer controls when to pull.
+- Always fetch before analysing. A `git fetch` is mandatory at the start of Step 3 — it is safe and read-only. Pull is also automatic when the local branch is behind the remote, using `--ff-only` to avoid force-merging diverged history. If the pull fails, stop and report — never force it.
 - If a repo scan reveals something concerning that's unrelated to the story (e.g., a
   potential bug or tech debt), mention it briefly but keep the focus on the story at hand.
   Don't derail the grooming with unrelated findings.
