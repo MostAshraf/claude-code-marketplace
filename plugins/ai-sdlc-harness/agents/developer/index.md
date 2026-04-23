@@ -55,7 +55,7 @@ WORKTREE_BRANCH="worktree/<story-id>-t<n>-$(date +%s)"
 WORKTREE_PATH="<REPO_PATH>/../worktrees/<repo-name>-t<n>"
 
 # Create the worktree from the feature branch
-git -C <REPO_PATH> worktree add "$WORKTREE_PATH" -b "$WORKTREE_BRANCH" <feature-branch>
+git -C "<REPO_PATH>" worktree add "$WORKTREE_PATH" -b "$WORKTREE_BRANCH" "<feature-branch>"
 ```
 
 Then work entirely within `$WORKTREE_PATH` — all reads, writes, edits, and builds happen there.

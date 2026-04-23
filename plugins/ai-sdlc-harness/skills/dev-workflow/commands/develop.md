@@ -282,8 +282,8 @@ EOF
 
 3. **Clean up** worktree:
    ```bash
-   git -C "$REPO_PATH" worktree remove <worktree-path> 2>/dev/null
-   git -C "$REPO_PATH" branch -D <worktree-branch> 2>/dev/null
+   git -C "$REPO_PATH" worktree remove "<worktree-path>" 2>/dev/null
+   git -C "$REPO_PATH" branch -D "<worktree-branch>" 2>/dev/null
    ```
 
 4. Mark lane as `phase: "idle"`. **Loop back to Step 1** — this lane can now pick up
