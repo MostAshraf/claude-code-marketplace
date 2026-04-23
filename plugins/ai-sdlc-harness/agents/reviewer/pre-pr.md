@@ -83,7 +83,9 @@ created. Broader than per-task reviews — covers implementation and tests toget
 <issues with file:line, or "No issues">
 
 ### 7. Git Hygiene
-- All commits follow `#<STORY-ID> #<TASK-ID>:` convention: ✅ / ❌
+- All commits follow the correct convention: ✅ / ❌
+  - Phase 3/rework: `#<STORY-ID> #<TASK-ID>: description` (both IDs mandatory)
+  - Phase 5 test-harden: `#<STORY-ID> test-harden: description` (Story ID only — no Task ID is correct)
 - Branch name correct: ✅ / ❌
 - No extraneous or accidentally committed files: ✅ / ❌
 
