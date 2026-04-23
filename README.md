@@ -6,7 +6,7 @@ A collection of Claude Code plugins by [Mostafa Ashraf](https://github.com/MostA
 
 | Plugin | Version | Description |
 |--------|---------|-------------|
-| [ai-sdlc-harness](./plugins/ai-sdlc-harness/) | 1.0.0 | AI-driven SDLC workflow harness — multi-agent development with plan → code → review → test → PR, automated guardrails, and multi-provider support. |
+| [ai-sdlc-harness](./plugins/ai-sdlc-harness/) | 1.1.0 | AI-driven SDLC workflow harness — multi-agent development with plan → code → review → test → PR, automated guardrails, and multi-provider support. |
 
 ## Installing a Plugin
 
