@@ -137,6 +137,7 @@ When starting, immediately:
 Use the build command from your LANGUAGE CONTEXT:
 
 1. **Attempt 1**: Read build output, identify errors, fix, re-run.
+   - **API compatibility check (before guessing at fixes):** If the error is a method/function not found at compile time, a runtime exception thrown by a library on construction or invocation, or a type mismatch on a library call — treat it as a potential API-compatibility mismatch first. Check the task's **Notes** column for an `[API: <lib> v<version>]` annotation, then verify the prescribed method signature against the library's official docs for that exact version. Use the version-correct alternative before attempting any other fix. This avoids the spiral of trying multiple workarounds when the real cause is a version break.
 2. **Attempt 2**: Grep for related usages/types, fix, re-run.
 3. **Escalate**: If build still fails after 2 fix attempts, do NOT commit. Report failure
    with full build output and set Outcome to `FAILED`.

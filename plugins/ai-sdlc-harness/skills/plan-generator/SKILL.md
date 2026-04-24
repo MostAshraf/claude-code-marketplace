@@ -45,6 +45,16 @@ Read `.claude/context/repos-metadata.md` and `.claude/context/repos-paths.md` to
 - If multiple repos are affected, tag each task with the correct repo
 - Identify **cross-repo boundaries** — where repos communicate (HTTP API calls, Service Bus messages, shared DTOs). These will be defined as contracts so all repos can develop in parallel.
 
+### 1c. Dependency Version Pre-Flight
+
+For each affected repo, build a version map of its direct dependencies:
+
+1. Read `key_dependencies` from `.claude/context/language-config.md` for the repo. If the field is absent or empty (workspace initialised before this feature, or unsupported manifest format), fall back to reading the repo's primary dependency manifest directly — identified by `project_root_markers` in `language-config.md`. Apply the same extraction rules as language-discovery Phase 2 (pom.xml, package.json, go.mod, pyproject.toml are supported; note unavailable if format is unsupported).
+
+2. Hold the version map in context for use in step 2. You will not write it to the plan; it informs annotations only.
+
+**Annotation rule (applied in step 2):** for every task whose Description prescribes a specific named method, type, or API on a library, append `[API: <lib> v<version>]` to that task's **Notes** column — e.g., `test-required: true · [API: some-library v2.3.0]`. This is the developer's prompt to verify the method signature against docs for that exact version before implementing. Omit the annotation only for tasks with no library API usage (pure config, dependency bumps, scaffolding).
+
 ### 2. Task Decomposition
 
 Break the story into ordered, atomic tasks. For each task:

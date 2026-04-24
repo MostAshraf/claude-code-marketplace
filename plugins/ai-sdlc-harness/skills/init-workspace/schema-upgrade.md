@@ -31,6 +31,7 @@ Honour `--keep-legacy` when invoked with that flag:
   - `coverage_format`
   - `zero_warning_support`
   - `permissions_requested`
+  - `key_dependencies` (extract from manifest using the same rules as language-discovery Phase 2 — pom.xml, package.json, go.mod, pyproject.toml; leave `[]` for unsupported formats)
 
 This is the right path for users who carefully tuned commands in the old format and don't want to repeat the negotiation.
 
