@@ -40,6 +40,7 @@ These rules apply to ALL phases of the dev-workflow. Individual command files mu
      - Set `Testing started` (Workflow Metrics) at the start of Phase 5
      - Set `Testing completed` (Workflow Metrics) when all test tasks are ✅ Done
      - Set `PR created` (Workflow Metrics) after PR is successfully created in Phase 6
+     - After a Phase 6 history-cleanup rebase (`git rebase --autosquash`), re-derive each task's commit hash from `git log <default-branch>..<feature-branch> --oneline` and update the tracker's **Commit(s)** column before Step 6 commits the tracker — the rebase rewrites SHAs and the stored hashes become stale
      - Set `PR review response started` (Workflow Metrics) when the Planner adds new PR-response tasks in Phase 7
      - Set `PR review response completed` (Workflow Metrics) when all PR-response tasks are ✅ Done in Phase 7
      - Set `PR review response: skipped` (Workflow Metrics) if the human selects no action in Phase 7
