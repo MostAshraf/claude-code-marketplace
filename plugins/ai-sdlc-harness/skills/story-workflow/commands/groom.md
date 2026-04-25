@@ -50,43 +50,49 @@ Present your assessment to the user for confirmation:
 
 Wait for confirmation before proceeding. Do not scan repos the user hasn't approved.
 
-### Step 3 — Verify Repo State and Pull Latest
+### Step 3 — Fetch, Pull, Then Verify Repo State
 
-For each confirmed repo, use the local path from `.claude/context/repos-paths.md` and verify:
+**This step is a hard prerequisite for Step 4. Do not begin any codebase scan until Step 3 completes for every confirmed repo.**
+
+For each confirmed repo, use the local path from `.claude/context/repos-paths.md` and run through all sub-steps in order:
 
 1. **Path exists**: Check the directory exists and is a git repo.
-2. **Fetch from remote**: Always run `git -C <path> fetch origin` before any other checks.
-   This updates the local knowledge of the remote without touching the working tree.
-   If the fetch fails (no network, bad remote), report the error and stop for that repo:
+2. **Fetch from remote** *(mandatory, no exceptions)*: Run `git -C "<path>" fetch origin`.
+   This updates local knowledge of the remote without touching the working tree.
+   If the fetch fails (no network, bad remote), report the error and **stop for that repo**:
    > "⚠️ [repo-name] — could not reach remote. Check your network or remote config before grooming."
-3. **On default branch**: Run `git -C <path> branch --show-current` and compare with the
+   Do not proceed to the pull or the scan for a repo whose fetch failed.
+3. **On default branch**: Run `git -C "<path>" branch --show-current` and compare with the
    default branch from `repos-metadata.md`. If not on the default branch:
    > "⚠️ [repo-name] is on branch `feature/xyz`, not `main`. The technical analysis should
    > be based on the latest default branch to be accurate.
    >
    > Options:
-   > 1. **Switch to `main`** — I'll run `git checkout main` before analysing.
-   > 2. **Proceed on current branch** — analyse as-is (results may not reflect latest state).
+   > 1. **Switch to `main`** — I'll run `git checkout main` and pull before analysing.
+   > 2. **Proceed on current branch** — analyse as-is (**warning: results will reflect the
+   >    current branch, not the latest default branch — grooming output may be inaccurate**).
    >
    > Please choose (1 or 2):"
 
    Wait for an explicit numeric choice. Do not default to either option. If the user
-   chooses option 1, run `git -C <path> checkout <default-branch>` then continue to the
-   Pull Latest sub-step below. If the user chooses option 2, proceed on the current branch
-   and skip the Pull Latest sub-step.
-4. **Pull latest** *(skipped if user chose to proceed on current branch)*: Run `git rev-list HEAD..origin/<default-branch> --count` to check if
-   the local branch is behind the (now-fetched) remote. If behind, pull automatically:
+   chooses option 1, run `git -C "<path>" checkout <default-branch>` then continue to the
+   Pull sub-step below. If the user chooses option 2, skip the pull and proceed directly to
+   Step 4 — but surface the warning in the technical notes output so the reader knows the
+   analysis may be stale.
+4. **Pull latest** *(skipped only if user explicitly chose option 2 above)*: Run
+   `git rev-list HEAD..origin/<default-branch> --count` to check if the local branch is
+   behind the (now-fetched) remote. If behind, pull automatically:
    ```bash
-   git -C <path> pull --ff-only origin <default-branch>
+   git -C "<path>" pull --ff-only origin <default-branch>
    ```
    Report the result:
    > "✅ [repo-name] pulled to latest — now at [short-hash] ([N] new commits)."
 
    If the pull fails (e.g. local uncommitted changes, diverged history), do not force it.
-   Report the error and ask the user to resolve it manually before proceeding:
+   **Stop and report** — do not proceed to the scan:
    > "⚠️ [repo-name] — pull failed: [error]. Please resolve manually, then re-run `/story-groom`."
 
-Only proceed with the analysis for repos that are confirmed up to date.
+Complete Step 3 for ALL confirmed repos before starting Step 4. A repo whose fetch or pull failed must not be scanned.
 
 ### Step 4 — Analyze Each Repo
 
@@ -144,7 +150,7 @@ notes as a comment on the work item.
 - Never switch git branches without explicit user approval. Always present a numbered
   choice and wait for a response before running any `git checkout`. Never default or
   assume — if the user's reply is ambiguous, re-prompt.
-- Always fetch before analysing. A `git fetch` is mandatory at the start of Step 3 — it is safe and read-only. Pull is also automatic when the local branch is behind the remote, using `--ff-only` to avoid force-merging diverged history. If the pull fails, stop and report — never force it.
+- **Fetch → Pull → Scan is the non-negotiable order.** `git fetch origin` runs first (mandatory, no exceptions). `git pull --ff-only` follows for repos on the default branch (automatic when behind, pull failure stops the scan for that repo — never force it). Only after both succeed does the codebase scan begin. A repo that could not be fetched or pulled must not be scanned.
 - If a repo scan reveals something concerning that's unrelated to the story (e.g., a
   potential bug or tech debt), mention it briefly but keep the focus on the story at hand.
   Don't derail the grooming with unrelated findings.
