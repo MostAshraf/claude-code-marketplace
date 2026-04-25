@@ -184,12 +184,15 @@ For each task T(n) in the task breakdown, produce a Test Outline that lists the 
 
 ### 6. Save Plan Document
 
-**Before saving**, run this command and capture the output as `TODAY`:
+**Before saving**, run these commands:
 ```bash
-date +%Y-%m-%d
+date +%Y-%m-%d   # capture as TODAY
+# Derive WORKSPACE_ROOT: it is the directory whose .claude/context/ holds provider-config.md
+# You already read repos-paths.md from .claude/context/ in step 1b — use its parent's parent
 ```
-Save to: `ai/plans/TODAY_<story-id>_<slug>.md`
-where TODAY is the output of the command above (e.g. 2026-04-25).
+Save to: `$WORKSPACE_ROOT/ai/plans/TODAY_<story-id>_<slug>.md`
+where TODAY is the output of the date command above (e.g. 2026-04-25) and WORKSPACE_ROOT is
+the absolute path derived above.
 
 The plan document must include:
 1. Story metadata (ID, title, sprint)
@@ -212,8 +215,9 @@ The plan document must include:
 ```bash
 date +%Y-%m-%d
 ```
-Save to: `ai/tasks/TODAY_<story-id>_<slug>_${CLAUDE_SESSION_ID}.md`
-where TODAY is the output of the command above.
+Save to: `$WORKSPACE_ROOT/ai/tasks/TODAY_<story-id>_<slug>_${CLAUDE_SESSION_ID}.md`
+where TODAY is the output of the command above and WORKSPACE_ROOT is the same absolute path
+derived in Step 6.
 
 Before writing the tracker, run `date -u +"%Y-%m-%d %H:%M UTC"` and use the output as the `Workflow started` value. All other metrics must remain `—` — they are filled in at their respective phase transitions, not now.
 
