@@ -232,9 +232,11 @@ Format:
 | T1 | AuthService | ... | ⏳ Pending | — | — | test-required: true |
 | T2 | AuthService | ... | ⏳ Pending | — | — | Depends on T1 |
 | T3 | BillingService | ... | ⏳ Pending | — | — | test-required: false |
+| T-TEST-AuthService | AuthService | Test hardening | ⏳ Pending | — | — | Phase 5 |
+| T-TEST-BillingService | BillingService | Test hardening | ⏳ Pending | — | — | Phase 5 |
 
 Column definitions:
-- **Task ID**: T1, T2, ... for dev tasks
+- **Task ID**: T1, T2, ... for dev tasks; T-TEST-\<RepoName\> for Phase 5 test hardening
 - **Repo**: Must match a repo name from repos-paths.md
 - **Title**: Brief description of the task
 - **Status**: One of ⏳ Pending, 🔧 In Progress, 🔄 In Review, ✅ Done
@@ -277,6 +279,8 @@ Column definitions:
 | T1 | — | — | 0 | 0 | — | — |
 | T2 | — | — | 0 | 0 | — | — |
 | T3 | — | — | 0 | 0 | — | — |
+| T-TEST-AuthService | — | — | 0 | 0 | N/A | N/A |
+| T-TEST-BillingService | — | — | 0 | 0 | N/A | N/A |
 
 ---
 
@@ -291,10 +295,10 @@ these entries — they are recorded for human review at GATE #2.)*
 ```
 
 **Notes:**
-- `Test Written`: timestamp when the Tester commits the failing tests for a `test-required: true` task (filled by orchestrator after Tester AGENT STATUS parsed). Leave `—` for `test-required: false` tasks.
-- `Green At`: timestamp when the Developer commits passing implementation (filled by orchestrator after Developer AGENT STATUS parsed).
+- `Test Written`: timestamp when the Tester commits the failing tests for a `test-required: true` task (filled by orchestrator after Tester AGENT STATUS parsed). Leave `—` for `test-required: false` tasks; `N/A` for T-TEST rows.
+- `Green At`: timestamp when the Developer commits passing implementation (filled by orchestrator after Developer AGENT STATUS parsed). `N/A` for T-TEST rows.
 - For single-repo stories, the Repo column still appears with one value throughout. The `Repo Status` section has one row.
-- There are no `T-TEST-<RepoName>` tracker rows. Phase 5 (Test Hardening) runs as a post-phase operation; the orchestrator records its outcome in Workflow Metrics, not as task rows.
+- `T-TEST-<RepoName>` rows track Phase 5 test hardening — one per affected repo. The orchestrator updates them through the same status lifecycle (Pending → In Progress → In Review → Done) as dev tasks.
 
 ### 8. Present for Approval
 
@@ -313,6 +317,6 @@ Do NOT proceed until receiving approval.
 - Every task must have a **Repo** column value matching a repo name from `repos-metadata.md`.
 - Every task must have `test-required: true` or `test-required: false` in its Notes column.
 - Every `test-required: true` task must have a corresponding Test Outline entry with at least one test name.
-- Do NOT include `T-TEST-<RepoName>` rows in the tracker. Phase 5 (Test Hardening) is tracked via Workflow Metrics.
+- Include one `T-TEST-<RepoName>` row per affected repo. These track Phase 5 test hardening through the same Pending → In Progress → In Review → Done lifecycle as dev tasks.
 - The **Repo Status** section must be populated from `repos-paths.md` and `repos-metadata.md`.
 - The plan is the **contract** — all agents will reference it as the source of truth.

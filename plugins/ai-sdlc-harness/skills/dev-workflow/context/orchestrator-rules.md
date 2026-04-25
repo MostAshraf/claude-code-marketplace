@@ -37,8 +37,12 @@ These rules apply to ALL phases of the dev-workflow. Individual command files mu
      - Set task `Review Rounds` +1 and `Build Retries` after each review cycle
      - Set `Development completed` (Workflow Metrics) when all dev tasks are ✅ Done (Phase 4)
      - Set `Human approval (impl)` (Workflow Metrics) when human approves implementation in Phase 4
-     - Set `Testing started` (Workflow Metrics) at the start of Phase 5
-     - Set `Testing completed` (Workflow Metrics) when all test tasks are ✅ Done
+     - Set `Test hardening started` (Workflow Metrics) at the start of Phase 5
+     - Set T-TEST-\<RepoName\> → 🔧 In Progress, set task `Started` (Task Metrics) when launching the Phase 5 tester for each repo
+     - Set T-TEST-\<RepoName\> → 🔄 In Review, record tester commit hash in `Commit(s)` after tester SUCCESS in Phase 5
+     - Set T-TEST-\<RepoName\> → ✅ Done, set task `Completed` (Task Metrics), set `Reviewer Verdict` to ✅ Approved after Phase 5 reviewer approval per repo
+     - Set T-TEST-\<RepoName\> → 🔧 In Progress after Phase 5 reviewer CHANGES_REQUESTED
+     - Set `Test hardening completed` (Workflow Metrics) when all T-TEST-\<RepoName\> tasks are ✅ Done
      - Set `PR created` (Workflow Metrics) after PR is successfully created in Phase 6
      - After a Phase 6 history-cleanup rebase (`git rebase --autosquash`), re-derive each task's commit hash from `git log <default-branch>..<feature-branch> --oneline` and update the tracker's **Commit(s)** column before Step 6 commits the tracker — the rebase rewrites SHAs and the stored hashes become stale
      - Set `PR review response started` (Workflow Metrics) when the Planner adds new PR-response tasks in Phase 7

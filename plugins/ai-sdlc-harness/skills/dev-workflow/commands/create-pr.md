@@ -7,7 +7,7 @@
 
 - Tests approved (Phase 5 complete).
 - ALL tasks (dev + test) are ✅ Done in the tracker.
-- `Testing completed` timestamp is set.
+- `Test hardening completed` timestamp is set.
 - If in direct phase mode, verify by reading the tracker.
 
 ## Steps

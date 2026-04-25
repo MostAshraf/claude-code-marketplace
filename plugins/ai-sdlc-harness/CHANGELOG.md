@@ -4,6 +4,14 @@ All notable changes to `ai-sdlc-harness` are documented here.
 
 ---
 
+## [Unreleased]
+
+### Fixes
+
+- **T-TEST tracker rows restored for Phase 5** — `T-TEST-<RepoName>` rows are now included in every generated tracker (one per affected repo). The orchestrator advances them through the full Pending → In Progress → In Review → Done lifecycle during Phase 5, recording the tester commit hash and reviewer verdict exactly as Phase 3 dev tasks are tracked. Workflow Metrics field names aligned to `Test hardening started` / `Test hardening completed` everywhere (orchestrator-rules, create-pr prerequisites, sample tracker, eval tests, README). Legacy trackers without T-TEST rows continue to work — `tester-activation-guard.sh` already skips T-TEST when checking dev-task completion.
+
+---
+
 ## [1.1.0] — 2026-04-23
 
 ### Features

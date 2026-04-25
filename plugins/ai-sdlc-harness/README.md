@@ -198,7 +198,7 @@ sequenceDiagram
 
     rect rgb(80, 25, 55)
         Note over H,T: Phase 5 — Test Hardening
-        Note over O: Record metric: Testing started
+        Note over O: Record metric: Test hardening started
         O->>T: @tester Fill integration/E2E coverage gaps (≥ 90% threshold)
         T-->>O: AGENT STATUS (tests, coverage %, commit)
 
@@ -206,7 +206,7 @@ sequenceDiagram
         R-->>O: AGENT STATUS (verdict)
 
         alt Verdict: APPROVED
-            Note over O: Record metric: Testing completed
+            Note over O: Record metric: Test hardening completed
         else Verdict: CHANGES_REQUESTED
             Note over O: Relay [R<n>] to Tester, loop
         end
