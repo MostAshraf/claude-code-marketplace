@@ -184,7 +184,12 @@ For each task T(n) in the task breakdown, produce a Test Outline that lists the 
 
 ### 6. Save Plan Document
 
-Save to: `ai/plans/$(date +%Y-%m-%d)_$ARGUMENTS[0]_$ARGUMENTS[1].md`
+**Before saving**, run this command and capture the output as `TODAY`:
+```bash
+date +%Y-%m-%d
+```
+Save to: `ai/plans/TODAY_<story-id>_<slug>.md`
+where TODAY is the output of the command above (e.g. 2026-04-25).
 
 The plan document must include:
 1. Story metadata (ID, title, sprint)
@@ -203,7 +208,12 @@ The plan document must include:
 
 ### 7. Create Task Tracker
 
-Save to: `ai/tasks/$(date +%Y-%m-%d)_$ARGUMENTS[0]_$ARGUMENTS[1]_${CLAUDE_SESSION_ID}.md`
+**Before saving**, run this command and capture the output as `TODAY`:
+```bash
+date +%Y-%m-%d
+```
+Save to: `ai/tasks/TODAY_<story-id>_<slug>_${CLAUDE_SESSION_ID}.md`
+where TODAY is the output of the command above.
 
 Before writing the tracker, run `date -u +"%Y-%m-%d %H:%M UTC"` and use the output as the `Workflow started` value. All other metrics must remain `—` — they are filled in at their respective phase transitions, not now.
 
