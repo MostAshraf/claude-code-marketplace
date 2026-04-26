@@ -214,6 +214,8 @@ sequenceDiagram
 
     rect rgb(20, 65, 60)
         Note over H,R: Phase 6 — PR Creation
+        Note over O: git rebase --autosquash (squash fixup! commits into task commits)
+        Note over O: Re-derive commit hashes, refresh tracker Commit(s) column
         O->>R: @reviewer Pre-PR holistic review (full branch vs default, all tasks + tests)
         R-->>O: Pre-PR Review Report (AC coverage, test quality, conventions, SOLID/DRY/YAGNI, security, git hygiene)
         O->>H: Present Pre-PR Review Report
@@ -261,6 +263,8 @@ A Markdown file at `ai/tasks/` that tracks every task's status through the workf
                               🔧 In Progress (if changes requested)
 ```
 
+Dev tasks (`T1`, `T2`, ...) track Phase 3 implementation. One `T-TEST-<RepoName>` row per affected repo tracks Phase 5 test hardening through the same lifecycle — the orchestrator records the tester commit hash and reviewer verdict before marking it Done. Task Metrics additionally capture `Test Written` (when the tester commits failing tests for a `test-required: true` task) and `Green At` (when the developer commits the passing implementation).
+
 ### Worktree Isolation
 
 The Developer works in a temporary git worktree — a separate checkout of the repo. This means:
@@ -284,6 +288,8 @@ The Reviewer performs a three-phase review:
 0. **Ownership & convention pre-check** — Runs first, before any code is read. Verifies no forbidden path writes (developer/tester must not touch `./ai/`), commit message format, no emoji shortcodes in Markdown, no sensitive files (`.env`, `.pem`, `.key`). Any failure immediately returns `🔄 Changes Requested` and skips the later phases.
 1. **Spec compliance** — Does the code match the plan? Failures produce `[S1]`, `[S2]`, ... comments. If spec fails, code quality is skipped entirely.
 2. **Code quality** — Are conventions followed? Are there bugs? Produces `[R1]`, `[R2]`, ... comments with severities: `CRITICAL` (must fix), `WARNING` (should fix), `SUGGESTION` (consider).
+
+**Phase 2 planning** includes a dependency version pre-flight: the plan-generator reads `key_dependencies` from `language-config.md` and stamps each task's Notes with `[API: <lib> v<version>]` for any task that prescribes a named library method or type. Developers see the exact version at the point of implementation, preventing API-compatibility failures from wrong-version assumptions.
 
 **Phase 6 pre-PR holistic review** produces a structured report covering: full change surface (every file changed with category), AC-by-AC verification with implementation and test evidence, task coverage, test quality, conventions, SOLID/DRY/YAGNI, security, git hygiene, risk & assumptions review vs plan, open items (TODO/FIXME/HACK + unanswered story questions), and a ready-to-use PR description draft.
 
