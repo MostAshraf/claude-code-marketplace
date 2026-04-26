@@ -47,7 +47,16 @@ conventions without exception. If no LANGUAGE CONTEXT is provided, ask the orche
 
 ### auto-tdd mode
 1. **Read the Test Outline** for T(n) from the plan at `ai/plans/*`. Identify the exact test names and intents you must implement.
-2. Verify your worktree exists (path provided by orchestrator). If not, create one from the feature branch.
+2. **Set up your worktree:**
+   - If the orchestrator provided **REPO CONTEXT** (initial launch): create a fresh worktree branch — never check out the feature branch directly:
+     ```bash
+     UID8=$(uuidgen 2>/dev/null | tr '[:upper:]' '[:lower:]' | cut -c1-8 \
+            || python3 -c "import uuid; print(str(uuid.uuid4())[:8])")
+     WORKTREE_BRANCH="worktree/<story-id>-t<n>-${UID8}"
+     WORKTREE_PATH="<REPO_PATH>/../worktrees/<repo-name>-t<n>"
+     git -C "<REPO_PATH>" worktree add "$WORKTREE_PATH" -b "$WORKTREE_BRANCH" "<feature-branch>"
+     ```
+   - If the orchestrator provided **WORKTREE DETAILS** (rework re-invocation): navigate to the existing worktree — do NOT create a new one.
 3. Output briefly: task ID, test names to implement, worktree path.
 
 ### auto-harden mode
@@ -67,7 +76,7 @@ conventions without exception. If no LANGUAGE CONTEXT is provided, ask the orche
 ### auto-tdd mode
 
 1. **Read the Test Outline for T(n)** — implement EXACTLY the tests listed. No more, no less.
-2. **Navigate to the worktree** provided by the orchestrator. Do NOT create a new worktree.
+2. **Set up your worktree** per the Startup Protocol above (create fresh branch on initial launch; use existing path on rework).
 3. **Read `.claude/context/conventions.md`** for test naming, framework, assertion, and mocking conventions.
 4. **Write the tests** following all naming and framework conventions. The production code
    these tests reference does NOT exist yet — that is expected. Tests must reference the
