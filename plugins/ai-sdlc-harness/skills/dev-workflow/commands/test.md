@@ -43,6 +43,7 @@ Set `Test hardening started` to the output of `date -u +"%Y-%m-%d %H:%M UTC"`.
 For each affected repo (one per repo in the Repo Status section):
 
 1. Resolve the repo's local path from the Repo Status section or `repos-paths.md`.
+2. **Update tracker**: set `T-TEST-<RepoName>` → 🔧 In Progress and set task `Started` in Task Metrics.
 
 #### Step 1: Harden Tests
 
@@ -80,6 +81,8 @@ Instructions:
    ```
 ```
 
+After tester returns SUCCESS: **update tracker** — set `T-TEST-<RepoName>` → 🔄 In Review and record the tester's commit hash in `Commit(s)`.
+
 #### Step 2: Review Tests
 
 After tester completes, launch **@reviewer** with `mode: "auto"`:
@@ -99,10 +102,9 @@ Do NOT update the tracker — return your review report to the orchestrator.
 
 #### Handle Verdict
 
-- If `Verdict: APPROVED` — Proceed to next repo (or Phase 6 if all repos done).
+- If `Verdict: APPROVED` — **Update tracker**: set `T-TEST-<RepoName>` → ✅ Done, set `Reviewer Verdict` to ✅ Approved, and set task `Completed` in Task Metrics. Then proceed to next repo (or Phase 6 if all repos done).
 
-- If `Verdict: CHANGES_REQUESTED` — relay `[R<n>]` or `[T<n>]` comments to Tester.
-  Tester addresses and resubmits. Loop back to Step 2.
+- If `Verdict: CHANGES_REQUESTED` — **Update tracker**: set `T-TEST-<RepoName>` → 🔧 In Progress. Relay `[R<n>]` or `[T<n>]` comments to Tester; tester addresses and resubmits. After tester SUCCESS, update back to 🔄 In Review. Loop back to Step 2.
 
 ### Parallel Hardening (Multi-Repo)
 

@@ -4,6 +4,23 @@ All notable changes to `ai-sdlc-harness` are documented here.
 
 ---
 
+## [1.1.1] — 2026-04-25
+
+### Features
+
+- **Dependency version detection and API-compat annotations** — `init-workspace` language-discovery Phase 2 now extracts `key_dependencies` (flat `name: version` list) from `pom.xml`, `package.json`, `go.mod`, and `pyproject.toml` (Gradle, Cargo, and Gemfile produce an empty list with a comment). The `plan-generator` reads this map in a new Step 1c and stamps each task's Notes column with `[API: <lib> v<version>]` for any task that prescribes a named library method or type, so developers verify the exact API signature before implementing. The developer's build-recovery Attempt 1 now begins with an API-compatibility check when the error looks like a version mismatch, directing the developer to the `[API:]` annotation before trying arbitrary workarounds.
+- **Phase 6 autosquash before pre-PR review** — Developer commits Phase 6 reviewer-requested fixes as `fixup! <task-commit-subject>` (targeting the most recently committed task commit whose files the fix touches). After the developer completes, the orchestrator runs a non-interactive autosquash rebase (`GIT_SEQUENCE_EDITOR=true git rebase -i --autosquash`) so the pre-PR reviewer always sees clean, consolidated history. After the rebase, the orchestrator re-derives task commit hashes from `git log` and refreshes the tracker `Commit(s)` column before it is committed in Step 6 — the rebase rewrites SHAs, so stale hashes would otherwise be persisted. Rebase failure aborts and escalates to the human with the conflict output.
+- **T-TEST tracker rows for Phase 5 test hardening** — `T-TEST-<RepoName>` rows are now included in every generated tracker (one per affected repo). The orchestrator advances them through the full Pending → In Progress → In Review → Done lifecycle during Phase 5, recording the tester commit hash in `Commit(s)` and the reviewer verdict in `Reviewer Verdict`, mirroring how Phase 3 dev tasks are tracked. Workflow Metrics field names aligned to `Test hardening started` / `Test hardening completed` everywhere (orchestrator-rules, create-pr prerequisites, README). Legacy trackers without T-TEST rows continue to work — `tester-activation-guard.sh` already skips T-TEST when checking dev-task completion.
+
+### Fixes
+
+- **story-groom: enforce fetch → pull → scan order** — Step 3 is now an explicit hard prerequisite for Step 4: the codebase scan must not begin until fetch and pull complete for every confirmed repo. Fetch failure stops that repo entirely (no pull, no scan). Pull failure also stops the scan — the command reports and asks the user to resolve manually rather than proceeding on stale code. The "proceed on current branch" option now surfaces a staleness warning in the technical notes output. The `Important` section states "Fetch → Pull → Scan is the non-negotiable order."
+- **Enforce date-prefixed naming convention for plan and tracker files** — Plan and tracker save paths now use an explicit `date +%Y-%m-%d` Bash step rather than inline shell substitution, preventing silent date-prefix drops. Orchestrators are prohibited from injecting explicit save paths into the planner — the planner always derives the canonical path from the date command output and `WORKSPACE_ROOT`.
+- **Anchor plan and tracker saves to `WORKSPACE_ROOT`** — Orchestrator constraint #8 now defines `WORKSPACE_ROOT` as the directory whose `.claude/context/` holds `provider-config.md` and prohibits copying `ai/` files into any code repo before Phase 6. The plan-generator derives `WORKSPACE_ROOT` from the `.claude/context/` location before saving, replacing ambiguous relative paths that could resolve to a code-repo directory in multi-repo setups. The error-recovery block now instructs the planner to use the absolute workspace path.
+- **Tester worktree must use `-b` to create a new branch** — `git worktree add` without `-b` tries to check out the feature branch directly, which Git refuses when it is already checked out in the main worktree. Both the tester agent startup protocol and the orchestrator's tester launch template now always create a fresh branch (`git worktree add <path> -b worktree/<story>-t<n>-<uuid> <feature-branch>`). Rework re-invocations navigate to the existing worktree path instead of creating a new one.
+
+---
+
 ## [1.1.0] — 2026-04-23
 
 ### Features

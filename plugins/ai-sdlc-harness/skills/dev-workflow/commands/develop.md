@@ -105,7 +105,16 @@ Launch **@tester** with `run_in_background: true`, `name: "tester-<repo-name>"`,
    <Copy the Test Outline section for this task exactly as written in the plan>
 
    Instructions:
-   1. Create a worktree in this repo. If worktree creation fails, report it in AGENT STATUS.
+   1. Create a worktree with a fresh branch — NEVER check out the feature branch directly
+      (Git refuses it when already checked out in the main worktree):
+      ```bash
+      UID8=$(uuidgen 2>/dev/null | tr '[:upper:]' '[:lower:]' | cut -c1-8 \
+             || python3 -c "import uuid; print(str(uuid.uuid4())[:8])")
+      WORKTREE_BRANCH="worktree/<story-id>-t<n>-${UID8}"
+      WORKTREE_PATH="<REPO_PATH>/../worktrees/<repo-name>-t<n>"
+      git -C "<REPO_PATH>" worktree add "$WORKTREE_PATH" -b "$WORKTREE_BRANCH" "<feature-branch>"
+      ```
+      If worktree creation fails, report it in AGENT STATUS.
    2. Implement EXACTLY the tests listed in the Test Outline above — no more, no less.
    3. Run the test command. Confirm each new test FAILS (red). Acceptable failure: assertion
       error or "type/method not found" (expected — impl doesn't exist yet). NOT acceptable:

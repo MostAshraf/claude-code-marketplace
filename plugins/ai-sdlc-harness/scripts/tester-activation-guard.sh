@@ -129,7 +129,7 @@ for FILE in $TRACKER_FILES; do
             STATUS=$(echo "$line" | awk -F'|' '{gsub(/^[ \t]+|[ \t]+$/, "", $4); print $4}')
         fi
 
-        # Skip any T-TEST rows (legacy trackers may still have them)
+        # Skip T-TEST rows — these are Phase 5 hardening tasks, not Phase 3 dev tasks
         if echo "$TASK_ID" | grep -qiP '^T-TEST'; then
             continue
         fi

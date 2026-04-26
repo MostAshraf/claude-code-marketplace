@@ -43,6 +43,13 @@ For each repo, read the evidence map and a targeted sample of file contents (e.g
   - `build_warning_pattern`
   - `build_success_pattern`
   - `test_summary_pattern`
+- **key_dependencies** — extract library names and versions from statically parseable manifests. For each detected manifest in the repo, read it and record direct dependencies as a flat list of `"name: version"` strings. Supported formats and what to read:
+  - `pom.xml` → `<dependencies>` block; each `<dependency>` becomes `"groupId:artifactId: version"`. Where `<version>` is a property reference (`${...}`), record as `"groupId:artifactId: inherited"`.
+  - `package.json` → `dependencies` and `devDependencies` objects; each entry becomes `"packageName: version"`.
+  - `go.mod` → `require` block; each line becomes `"module/path: version"`.
+  - `pyproject.toml` → `[tool.poetry.dependencies]` or `[project.dependencies]`; each entry becomes `"package: version"`.
+  - All other manifest formats (`build.gradle`, `build.gradle.kts`, `Cargo.toml`, `Gemfile`, `composer.json`, etc.): skip; set `key_dependencies: []` and add a comment `# extraction not yet implemented for <format>`.
+
 - **Framework signals** (FastAPI, Spring Boot, MediatR, Next.js, NestJS, Gin, Rails, ...)
 - **Architecture signals** (layered, hexagonal, MVC, feature-folder, modules)
 - **Naming conventions** — sample 20 random source files in the repo. Detect filename casing (`snake_case`, `camelCase`, `PascalCase`, `kebab-case`) and symbol casing from a quick scan of their contents. Record both file and symbol conventions.
@@ -141,6 +148,7 @@ This is the full schema written to `.claude/context/language-config.md`. Every f
 - test_framework: "<e.g. pytest, xunit, junit5, vitest, playwright, go test>"
 - test_file_pattern: "<regex>"
 - permissions_requested: ["Bash(poetry:*)", "Bash(pytest:*)", ...]
+- key_dependencies: ["name: version", ...]  # optional; flat list extracted by Phase 2; empty list if manifest format unsupported
 ```
 
 **Notes:**

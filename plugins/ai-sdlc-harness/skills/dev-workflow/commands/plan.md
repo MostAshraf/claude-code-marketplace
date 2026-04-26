@@ -33,6 +33,11 @@ request a hybrid, or ask for different options.
 
 ### Step 2: Task Decomposition
 
+> **Orchestrator rule:** Do NOT include explicit file paths in the prompt to the Planner.
+> The plan-generator skill owns the naming convention (date-prefixed). Providing a path
+> causes the Planner to use it instead of the skill's convention, losing the date prefix
+> and session ID. Let the skill determine the paths.
+
 Once the human selects an approach, continue with **@planner**:
 
 ```

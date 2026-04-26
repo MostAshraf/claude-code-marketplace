@@ -43,7 +43,7 @@ The Test Outline is part of the plan document and is reviewed by the human at GA
 - Mark `test-required: false` for tasks with no observable behaviour: config changes, dependency
   bumps, file renames, scaffolding with no branching logic.
 - Record `test-required: true|false` in the Notes column of every tracker task row.
-- Do NOT create `T-TEST-<RepoName>` tracker rows — Phase 5 (Test Hardening) has no dedicated tracker rows.
+- Create one `T-TEST-<RepoName>` tracker row per affected repo for Phase 5 test hardening (e.g., `T-TEST-AuthService`). Notes value: `Phase 5`.
 
 ## Pre-Flight Check
 

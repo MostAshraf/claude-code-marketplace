@@ -7,7 +7,7 @@
 
 - Tests approved (Phase 5 complete).
 - ALL tasks (dev + test) are ✅ Done in the tracker.
-- `Testing completed` timestamp is set.
+- `Test hardening completed` timestamp is set.
 - If in direct phase mode, verify by reading the tracker.
 
 ## Steps
@@ -92,10 +92,40 @@ If the human chooses to fix:
    ```
    Fix the following pre-PR review issues on branch <feature-branch> in <repo-path>:
    <critical issues from the report>
-   Commit with: #<STORY-ID> #PR-fix: <short description>
+
+   For each fix commit, use the fixup! format so the orchestrator can squash it cleanly:
+
+     fixup! <exact subject of the task commit whose files this fix touches>
+
+   To find the target: run `git -C "<repo-path>" log <default-branch>..<feature-branch> --oneline`
+   and identify the task commit that last modified the files your fix touches. Copy its exact
+   subject (full first line, verbatim) as the fixup! suffix. If the fix touches files from
+   multiple task commits, target the most recently committed one.
+
+   Do NOT use the Co-Authored-By trailer on fixup! commits — they will be squashed away.
    ```
-2. After Developer completes, re-run Step 2 (pre-PR review) for the affected repos.
-3. Re-present Step 3 with the updated report.
+
+2. After the Developer completes, squash all `fixup!` commits into their target task commits
+   non-interactively, per repo:
+   ```bash
+   GIT_SEQUENCE_EDITOR=true git -C "<repo-path>" rebase -i --autosquash <default-branch>
+   ```
+   If the rebase exits non-zero, abort and escalate:
+   ```bash
+   git -C "<repo-path>" rebase --abort
+   # Present the conflict output to the human and pause the workflow.
+   ```
+
+3. After a successful rebase, re-derive the commit hashes for each task and refresh the
+   tracker's **Commit(s)** column before it is committed in Step 6:
+   ```bash
+   git -C "<repo-path>" log <default-branch>..<feature-branch> --oneline
+   ```
+   Match each line to its task by the Task ID in the commit subject (e.g. `#T2`).
+   Update the `Commit(s)` cell for every affected task row in the working-tree tracker.
+
+4. Re-run Step 2 (pre-PR review) for the affected repos.
+5. Re-present Step 3 with the updated report.
 
 Repeat until the human approves or explicitly overrides.
 

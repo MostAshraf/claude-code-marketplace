@@ -45,6 +45,16 @@ Read `.claude/context/repos-metadata.md` and `.claude/context/repos-paths.md` to
 - If multiple repos are affected, tag each task with the correct repo
 - Identify **cross-repo boundaries** — where repos communicate (HTTP API calls, Service Bus messages, shared DTOs). These will be defined as contracts so all repos can develop in parallel.
 
+### 1c. Dependency Version Pre-Flight
+
+For each affected repo, build a version map of its direct dependencies:
+
+1. Read `key_dependencies` from `.claude/context/language-config.md` for the repo. If the field is absent or empty (workspace initialised before this feature, or unsupported manifest format), fall back to reading the repo's primary dependency manifest directly — identified by `project_root_markers` in `language-config.md`. Apply the same extraction rules as language-discovery Phase 2 (pom.xml, package.json, go.mod, pyproject.toml are supported; note unavailable if format is unsupported).
+
+2. Hold the version map in context for use in step 2. You will not write it to the plan; it informs annotations only.
+
+**Annotation rule (applied in step 2):** for every task whose Description prescribes a specific named method, type, or API on a library, append `[API: <lib> v<version>]` to that task's **Notes** column — e.g., `test-required: true · [API: some-library v2.3.0]`. This is the developer's prompt to verify the method signature against docs for that exact version before implementing. Omit the annotation only for tasks with no library API usage (pure config, dependency bumps, scaffolding).
+
 ### 2. Task Decomposition
 
 Break the story into ordered, atomic tasks. For each task:
@@ -174,7 +184,15 @@ For each task T(n) in the task breakdown, produce a Test Outline that lists the 
 
 ### 6. Save Plan Document
 
-Save to: `ai/plans/$(date +%Y-%m-%d)_$ARGUMENTS[0]_$ARGUMENTS[1].md`
+**Before saving**, run these commands:
+```bash
+date +%Y-%m-%d   # capture as TODAY
+# Derive WORKSPACE_ROOT: it is the directory whose .claude/context/ holds provider-config.md
+# You already read repos-paths.md from .claude/context/ in step 1b — use its parent's parent
+```
+Save to: `$WORKSPACE_ROOT/ai/plans/TODAY_<story-id>_<slug>.md`
+where TODAY is the output of the date command above (e.g. 2026-04-25) and WORKSPACE_ROOT is
+the absolute path derived above.
 
 The plan document must include:
 1. Story metadata (ID, title, sprint)
@@ -193,7 +211,13 @@ The plan document must include:
 
 ### 7. Create Task Tracker
 
-Save to: `ai/tasks/$(date +%Y-%m-%d)_$ARGUMENTS[0]_$ARGUMENTS[1]_${CLAUDE_SESSION_ID}.md`
+**Before saving**, run this command and capture the output as `TODAY`:
+```bash
+date +%Y-%m-%d
+```
+Save to: `$WORKSPACE_ROOT/ai/tasks/TODAY_<story-id>_<slug>_${CLAUDE_SESSION_ID}.md`
+where TODAY is the output of the command above and WORKSPACE_ROOT is the same absolute path
+derived in Step 6.
 
 Before writing the tracker, run `date -u +"%Y-%m-%d %H:%M UTC"` and use the output as the `Workflow started` value. All other metrics must remain `—` — they are filled in at their respective phase transitions, not now.
 
@@ -208,9 +232,11 @@ Format:
 | T1 | AuthService | ... | ⏳ Pending | — | — | test-required: true |
 | T2 | AuthService | ... | ⏳ Pending | — | — | Depends on T1 |
 | T3 | BillingService | ... | ⏳ Pending | — | — | test-required: false |
+| T-TEST-AuthService | AuthService | Test hardening | ⏳ Pending | — | — | Phase 5 |
+| T-TEST-BillingService | BillingService | Test hardening | ⏳ Pending | — | — | Phase 5 |
 
 Column definitions:
-- **Task ID**: T1, T2, ... for dev tasks
+- **Task ID**: T1, T2, ... for dev tasks; T-TEST-\<RepoName\> for Phase 5 test hardening
 - **Repo**: Must match a repo name from repos-paths.md
 - **Title**: Brief description of the task
 - **Status**: One of ⏳ Pending, 🔧 In Progress, 🔄 In Review, ✅ Done
@@ -253,6 +279,8 @@ Column definitions:
 | T1 | — | — | 0 | 0 | — | — |
 | T2 | — | — | 0 | 0 | — | — |
 | T3 | — | — | 0 | 0 | — | — |
+| T-TEST-AuthService | — | — | 0 | 0 | N/A | N/A |
+| T-TEST-BillingService | — | — | 0 | 0 | N/A | N/A |
 
 ---
 
@@ -267,10 +295,10 @@ these entries — they are recorded for human review at GATE #2.)*
 ```
 
 **Notes:**
-- `Test Written`: timestamp when the Tester commits the failing tests for a `test-required: true` task (filled by orchestrator after Tester AGENT STATUS parsed). Leave `—` for `test-required: false` tasks.
-- `Green At`: timestamp when the Developer commits passing implementation (filled by orchestrator after Developer AGENT STATUS parsed).
+- `Test Written`: timestamp when the Tester commits the failing tests for a `test-required: true` task (filled by orchestrator after Tester AGENT STATUS parsed). Leave `—` for `test-required: false` tasks; `N/A` for T-TEST rows.
+- `Green At`: timestamp when the Developer commits passing implementation (filled by orchestrator after Developer AGENT STATUS parsed). `N/A` for T-TEST rows.
 - For single-repo stories, the Repo column still appears with one value throughout. The `Repo Status` section has one row.
-- There are no `T-TEST-<RepoName>` tracker rows. Phase 5 (Test Hardening) runs as a post-phase operation; the orchestrator records its outcome in Workflow Metrics, not as task rows.
+- `T-TEST-<RepoName>` rows track Phase 5 test hardening — one per affected repo. The orchestrator updates them through the same status lifecycle (Pending → In Progress → In Review → Done) as dev tasks.
 
 ### 8. Present for Approval
 
@@ -289,6 +317,6 @@ Do NOT proceed until receiving approval.
 - Every task must have a **Repo** column value matching a repo name from `repos-metadata.md`.
 - Every task must have `test-required: true` or `test-required: false` in its Notes column.
 - Every `test-required: true` task must have a corresponding Test Outline entry with at least one test name.
-- Do NOT include `T-TEST-<RepoName>` rows in the tracker. Phase 5 (Test Hardening) is tracked via Workflow Metrics.
+- Include one `T-TEST-<RepoName>` row per affected repo. These track Phase 5 test hardening through the same Pending → In Progress → In Review → Done lifecycle as dev tasks.
 - The **Repo Status** section must be populated from `repos-paths.md` and `repos-metadata.md`.
 - The plan is the **contract** — all agents will reference it as the source of truth.

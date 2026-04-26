@@ -37,9 +37,14 @@ These rules apply to ALL phases of the dev-workflow. Individual command files mu
      - Set task `Review Rounds` +1 and `Build Retries` after each review cycle
      - Set `Development completed` (Workflow Metrics) when all dev tasks are ✅ Done (Phase 4)
      - Set `Human approval (impl)` (Workflow Metrics) when human approves implementation in Phase 4
-     - Set `Testing started` (Workflow Metrics) at the start of Phase 5
-     - Set `Testing completed` (Workflow Metrics) when all test tasks are ✅ Done
+     - Set `Test hardening started` (Workflow Metrics) at the start of Phase 5
+     - Set T-TEST-\<RepoName\> → 🔧 In Progress, set task `Started` (Task Metrics) when launching the Phase 5 tester for each repo
+     - Set T-TEST-\<RepoName\> → 🔄 In Review, record tester commit hash in `Commit(s)` after tester SUCCESS in Phase 5
+     - Set T-TEST-\<RepoName\> → ✅ Done, set task `Completed` (Task Metrics), set `Reviewer Verdict` to ✅ Approved after Phase 5 reviewer approval per repo
+     - Set T-TEST-\<RepoName\> → 🔧 In Progress after Phase 5 reviewer CHANGES_REQUESTED
+     - Set `Test hardening completed` (Workflow Metrics) when all T-TEST-\<RepoName\> tasks are ✅ Done
      - Set `PR created` (Workflow Metrics) after PR is successfully created in Phase 6
+     - After a Phase 6 history-cleanup rebase (`git rebase --autosquash`), re-derive each task's commit hash from `git log <default-branch>..<feature-branch> --oneline` and update the tracker's **Commit(s)** column before Step 6 commits the tracker — the rebase rewrites SHAs and the stored hashes become stale
      - Set `PR review response started` (Workflow Metrics) when the Planner adds new PR-response tasks in Phase 7
      - Set `PR review response completed` (Workflow Metrics) when all PR-response tasks are ✅ Done in Phase 7
      - Set `PR review response: skipped` (Workflow Metrics) if the human selects no action in Phase 7
@@ -63,6 +68,7 @@ These rules apply to ALL phases of the dev-workflow. Individual command files mu
 6. **Build must always pass**: Every commit passes the repo's build command (from `language-config.md`).
 7. **Plan is the contract**: The approved plan is the single source of truth.
 8. **Tracker is persistent state**: Update in the working tree after every status change. The tracker stays **uncommitted** throughout Phases 3-5 and is committed once in Phase 6 before PR creation. Read the tracker before starting any work.
+   **Canonical location:** The tracker and plan always live under `<WORKSPACE_ROOT>/ai/`. The orchestrator MUST edit the workspace path — never a code-repo copy. The repo copy does not exist until Phase 6. Never copy `ai/` files from the workspace into any code repo before Phase 6. WORKSPACE_ROOT is the directory whose `.claude/context/` folder holds `provider-config.md`; derive it once at the start of Phase 2 and use it throughout.
 9. **Cross-repo contracts**: Repos never block each other. Cross-repo boundaries (API calls, Service Bus messages, shared DTOs) are resolved via contracts defined by the planner in Phase 2. The orchestrator includes relevant contracts in each developer's prompt so both sides can develop in parallel. The reviewer verifies contract compliance.
 10. **Background agents require `mode: "auto"`**: All agents launched with `run_in_background: true` MUST use `mode: "auto"` in the Agent tool call. Background agents cannot prompt for interactive permission approval — they will be blocked and fail. This applies to developers, reviewers, and testers in multi-repo parallel lanes.
 11. **Provider-agnostic operations**: All work item and PR/MR operations are routed through provider adapters. Read `.claude/context/provider-config.md` to determine which providers are active. Never hardcode provider-specific tool names in orchestrator logic — always resolve via `provider-config.md` and the corresponding adapter in `skills/providers/<provider>/`. This applies to Phase 1 (story fetching), Phase 6 (PR/MR creation and linking), and all story-workflow commands.
@@ -126,8 +132,9 @@ After **every** Planner agent invocation that involves writing plan or tracker f
 1. Log the error details.
 2. If the path was wrong (blocked by hook), correct the path and re-invoke the Planner with explicit instructions:
    ```
-   @planner Save the plan to ai/plans/<correct-path>. Do NOT use absolute paths
-   or paths outside ai/. Verify the file was saved by reading it back.
+   @planner Save the plan to <WORKSPACE_ROOT>/ai/plans/<correct-filename>.
+   Use the absolute workspace path — never a code-repo path. Verify the
+   file was saved by reading it back.
    ```
 3. If the Write tool itself failed (disk error, permissions), retry once. If it fails again, report to the human user and pause the workflow.
 
