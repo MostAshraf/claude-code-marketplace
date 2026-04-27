@@ -1,23 +1,18 @@
-# Claude Plugin Marketplace
+# claude-code-marketplace — DEPRECATED
 
-A collection of Claude Code plugins by [Mostafa Ashraf](https://github.com/MostAshraf).
+This marketplace has been retired. The only plugin it shipped — `ai-sdlc-harness` — now lives in its own repository:
 
-## Available Plugins
+👉 **https://github.com/MostAshraf/ai-sdlc-harness**
 
-| Plugin | Version | Description |
-|--------|---------|-------------|
-| [ai-sdlc-harness](./plugins/ai-sdlc-harness/) | 1.1.0 | AI-driven SDLC workflow harness — multi-agent development with plan → code → review → test → PR, automated guardrails, and multi-provider support. |
+## Migration
 
-## Installing a Plugin
-
-In any Claude Code session, run:
+If you previously installed via this marketplace, switch over with:
 
 ```
-/install-plugin https://github.com/MostAshraf/claude-code-marketplace/plugins/<plugin-name>
+/plugin marketplace remove MostAshraf-claude-code-marketplace
+/plugin marketplace add MostAshraf/ai-sdlc-harness
+/plugin install ai-sdlc-harness@ai-sdlc-harness
+/reload-plugins
 ```
 
-Or clone this repo and reference the plugin directory directly.
-
-## Plugin Catalog
-
-See [`marketplace.json`](./.claude-plugin/marketplace.json) for the machine-readable catalog.
+No content updates will be made to this repository. All future development happens in the new repo.
